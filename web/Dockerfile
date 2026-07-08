@@ -8,7 +8,7 @@ COPY package.json pnpm-lock.yaml ./
 # Install pnpm
 RUN npm install -g pnpm
 
-RUN pnpm install
+RUN pnpm install --ignore-scripts
 
 COPY . .
 RUN pnpm run generate

@@ -6,6 +6,8 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/nyaruka/phonenumbers"
+
 	"github.com/NdoleStudio/httpsms/pkg/entities"
 	"github.com/NdoleStudio/httpsms/pkg/middlewares"
 
@@ -149,5 +151,21 @@ func (h *handler) authorizePhoneAPIKey(c fiber.Ctx, phoneNumber string) bool {
 	if user.PhoneAPIKeyID == nil {
 		return true
 	}
+
+	normalize := func(value string) string {
+		parsed, err := phonenumbers.Parse(value, phonenumbers.UNKNOWN_REGION)
+		if err != nil {
+			return strings.ReplaceAll(value, " ", "")
+		}
+		return phonenumbers.Format(parsed, phonenumbers.E164)
+	}
+
+	normalizedPhoneNumber := normalize(phoneNumber)
+	for _, allowedPhoneNumber := range user.PhoneNumbers {
+		if normalize(allowedPhoneNumber) == normalizedPhoneNumber {
+			return true
+		}
+	}
+
 	return slices.Contains(user.PhoneNumbers, phoneNumber)
 }
