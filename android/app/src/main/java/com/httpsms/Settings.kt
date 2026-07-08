@@ -298,7 +298,7 @@ object Settings {
     }
 
     fun getServerUrlOrDefault(context:Context): URI {
-        val urlString = getServerUrl(context) ?: "https://delisms-api-924798676131.us-central1.run.app"
+        val urlString = getServerUrl(context) ?: "https://api.sms.delichow.ph"
         return URI(urlString)
     }
 
