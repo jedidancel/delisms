@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -339,11 +340,16 @@ func (service *WebhookService) getPayload(ctxLogger telemetry.Logger, event clou
 }
 
 func (service *WebhookService) getAuthToken(webhook *entities.Webhook) (string, error) {
+	issuer := strings.TrimSpace(os.Getenv("WEBHOOK_JWT_ISSUER"))
+	if issuer == "" {
+		issuer = "api.httpsms.com"
+	}
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
 		Audience:  []string{webhook.URL},
 		ExpiresAt: jwt.NewNumericDate(time.Now().UTC().Add(10 * time.Minute)),
 		IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
-		Issuer:    "api.httpsms.com",
+		Issuer:    issuer,
 		NotBefore: jwt.NewNumericDate(time.Now().UTC().Add(-10 * time.Minute)),
 		Subject:   string(webhook.UserID),
 	})
