@@ -1793,8 +1793,18 @@ func (container *Container) UserRistrettoCache() *ristretto.Cache[string, entiti
 	return ristrettoCache
 }
 
-// InitializeTraceProvider initializes the open telemetry trace provider
+// InitializeTraceProvider initializes the open telemetry trace provider.
+// Axiom exporters are enabled only when the required Axiom configuration is present.
+// This prevents self-hosted/lab deployments from continuously emitting 401 errors
+// with an empty Authorization header.
 func (container *Container) InitializeTraceProvider() func() {
+	if strings.TrimSpace(os.Getenv("AXIOM_TOKEN")) == "" ||
+		strings.TrimSpace(os.Getenv("AXIOM_DATASET_EVENTS")) == "" ||
+		strings.TrimSpace(os.Getenv("AXIOM_DATASET_METRICS")) == "" {
+		container.logger.Info("Axiom telemetry is not configured; external trace and metric exporters are disabled")
+		return func() {}
+	}
+
 	return container.initializeAxiomTraceProvider(container.version, container.projectID)
 }
 
