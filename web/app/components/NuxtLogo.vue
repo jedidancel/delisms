@@ -1,3 +1,3 @@
 <template>
-  <img src="/img/logo.svg" alt="httpSMS Logo" style="max-width: 100px" />
+  <img src="/img/delisms-icon-128.png" alt="DeliSMS Logo" style="max-width: 100px" />
 </template>

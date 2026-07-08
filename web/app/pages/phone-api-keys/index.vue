@@ -12,7 +12,7 @@ definePageMeta({
 })
 
 useHead({
-  title: 'Phone API Keys - httpSMS',
+  title: 'Phone API Keys - DeliSMS',
 })
 
 const config = useRuntimeConfig()
@@ -267,31 +267,25 @@ onBeforeUnmount(() => {
               <VSpacer />
               <VBtn
                 v-if="lgAndUp"
-                href="https://docs.httpsms.com/features/phone-api-keys"
+                href="https://api.sms.delichow.ph"
                 target="_blank"
                 variant="tonal"
                 class="mt-1"
               >
-                Documentation
+                Gateway API
               </VBtn>
             </div>
             <p class="text-medium-emphasis">
               If you have multiple phones, you can create unique phone API keys
               for your different Android phones. These API keys can only be used
-              on the specific mobile phone when it calls the httpSMS server for
+              on the specific mobile phone when it calls the DeliSMS gateway for
               specific actions like sending heartbeats, registering received
               messages, delivery reports etc. If you want to interact with the
-              full
-              <a
-                class="text-decoration-none hover:text-decoration-underline"
-                target="_blank"
-                href="https://api.httpsms.com"
-                >httpSMS API</a
-              >, use the API key under your account settings page instead
+              full DeliSMS Gateway API, use the account API key under
               <NuxtLink
                 class="text-decoration-none hover:text-decoration-underline"
                 to="/settings"
-                >https://httpsms.com/settings</NuxtLink
+                >DeliSMS settings</NuxtLink
               >.
             </p>
             <VTable class="mb-4 api-key-table" density="comfortable">
@@ -363,8 +357,8 @@ onBeforeUnmount(() => {
       <VCard>
         <VCardTitle>Create Phone API Key</VCardTitle>
         <VCardSubtitle class="mt-2" style="white-space: normal">
-          After creating the API key you can use it to login to the httpSMS
-          Android app on your phone
+          After creating the API key, use it to log in to the DeliSMS
+          Android app on your phone.
         </VCardSubtitle>
         <VCardText>
           <VForm @submit.prevent="createPhoneApiKey">
@@ -406,14 +400,7 @@ onBeforeUnmount(() => {
       <VCard>
         <VCardTitle>Phone API Key QR Code</VCardTitle>
         <VCardSubtitle class="mt-2" style="white-space: normal">
-          Scan this QR code with the
-          <a
-            class="text-decoration-none hover:text-decoration-underline"
-            target="_blank"
-            :href="appStore.appData.appDownloadUrl"
-            >httpSMS app</a
-          >
-          on your Android phone to login.
+          Scan this QR code with the DeliSMS Android app on your phone to log in.
         </VCardSubtitle>
         <VCardText class="text-center">
           <VTextField
@@ -449,8 +436,8 @@ onBeforeUnmount(() => {
           Are you sure you want to delete the phone API Key?
         </VCardTitle>
         <VCardText class="text-medium-emphasis">
-          You will have to logout and login again on the <b>httpSMS</b> Android
-          app on all of the phones which are currently using this API key.
+          You will have to log out and log in again on the <b>DeliSMS</b> Android
+          app on all phones currently using this API key.
         </VCardText>
         <VCardActions class="pb-2 mt-n2">
           <VBtn
@@ -486,8 +473,8 @@ onBeforeUnmount(() => {
         <VCardText>
           This will remove the
           <code>{{ formatPhoneNumber(activePhoneNumber) }}</code> from your
-          phone API key. You will have to logout and login again on the
-          <b>httpSMS</b> Android app on the phone which is currently using this
+          phone API key. You will have to log out and log in again on the
+          <b>DeliSMS</b> Android app on the phone currently using this
           API key.
         </VCardText>
         <VCardActions class="pb-4">

@@ -4,7 +4,7 @@ definePageMeta({
 })
 
 useHead({
-  title: 'Threads - httpSMS',
+  title: 'Threads - DeliSMS',
 })
 
 const { lgAndUp } = useDisplay()

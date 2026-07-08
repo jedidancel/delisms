@@ -13,7 +13,7 @@ definePageMeta({
 })
 
 useHead({
-  title: 'New Message - httpSMS',
+  title: 'Send Test Message - DeliSMS',
 })
 
 const router = useRouter()

@@ -5,9 +5,9 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Log in to your account - httpSMS',
+  title: 'Log in to DeliSMS Gateway',
   description:
-    'Log in to httpSMS to send and receive SMS messages through your own Android phone with a simple HTTP API.',
+    'Log in to DeliSMS to manage the external Android SMS gateway lab for DeliChow.',
 })
 
 const route = useRoute()

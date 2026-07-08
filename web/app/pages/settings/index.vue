@@ -36,7 +36,7 @@ definePageMeta({
 })
 
 useHead({
-  title: 'Settings - httpSMS',
+  title: 'Settings - DeliSMS',
 })
 
 const config = useRuntimeConfig()
@@ -877,7 +877,7 @@ onMounted(async () => {
             <p class="text-medium-emphasis">
               Use your API Key in the <v-code>x-api-key</v-code> HTTP Header
               when sending requests to
-              <v-code>https://api.httpsms.com</v-code> endpoints.
+              <v-code>https://api.sms.delichow.ph</v-code> endpoints.
             </p>
             <div v-if="apiKey === ''" class="mb-n9 pl-3 pt-5">
               <VProgressCircular
@@ -927,9 +927,9 @@ onMounted(async () => {
                       <a
                         class="text-decoration-none hover:text-decoration-underline"
                         :href="config.public.appDownloadUrl"
-                        >httpSMS app</a
+                        >DeliSMS app</a
                       >
-                      on your Android phone to login.
+                      on your Android phone to log in.
                     </p>
                     <canvas ref="qrCodeCanvas" />
                   </VCardText>
@@ -969,8 +969,8 @@ onMounted(async () => {
                     >Are you sure you want to rotate your API Key?</VCardTitle
                   >
                   <VCardText>
-                    You will have to logout and login again on the
-                    <b>httpSMS</b> Android app with your new API key after you
+                    You will have to log out and log in again on the
+                    <b>DeliSMS</b> Android app with your new API key after you
                     rotate it.
                   </VCardText>
                   <VCardActions class="pb-4">
@@ -1054,7 +1054,7 @@ onMounted(async () => {
               <VBtn
                 v-if="lgAndUp"
                 class="ml-4"
-                href="https://docs.httpsms.com/webhooks/introduction"
+                href="https://api.sms.delichow.ph"
                 >Documentation</VBtn
               >
             </div>
@@ -1064,9 +1064,7 @@ onMounted(async () => {
               Discord Integration
             </h5>
             <p class="text-medium-emphasis">
-              Send and receive SMS messages without leaving your discord server
-              with the httpSMS discord app using the
-              <v-code>/httpsms</v-code> command.
+              Optional Discord integration inherited from the gateway. Keep disabled unless this lab explicitly needs Discord event forwarding.
             </p>
             <div v-if="loadingDiscordIntegrations">
               <VProgressCircular
@@ -1172,7 +1170,7 @@ onMounted(async () => {
               delivered when the schedule opens according to your
               <a
                 class="text-decoration-none"
-                href="https://docs.httpsms.com/features/outgoing-message-queue#id-3.-send-schedule-window"
+                href="https://api.sms.delichow.ph"
                 >configured send rate</a
               >.
             </p>
@@ -1235,7 +1233,7 @@ onMounted(async () => {
               <VBtn
                 v-if="lgAndUp"
                 class="ml-4"
-                href="https://docs.httpsms.com/features/outgoing-message-queue"
+                href="https://api.sms.delichow.ph"
                 >Documentation</VBtn
               >
             </div>
@@ -1245,7 +1243,7 @@ onMounted(async () => {
               Email Notifications
             </h5>
             <p class="text-medium-emphasis">
-              Manage the email notifications which you receive from httpSMS.
+              Manage the gateway email notifications which you receive from DeliSMS.
               Feel free to turn on/off individual notifications anytime so you
               don't get overloaded with emails
             </p>
@@ -1260,7 +1258,7 @@ onMounted(async () => {
             <VSwitch
               v-model="notificationSettings.webhook_enabled"
               color="primary"
-              label="Webhook and discord emails"
+              label="Webhook and Discord emails"
               :disabled="updatingEmailNotifications"
               hint="This switch controls email notifications we send when we can't forward events to your discord server or to your webhook."
               persistent-hint
@@ -1319,16 +1317,16 @@ onMounted(async () => {
             </h5>
             <p v-if="hasActiveSubscription" class="text-medium-emphasis">
               You cannot delete your account because you have an active
-              subscription on httpSMS.
+              subscription on DeliSMS.
               <NuxtLink class="text-decoration-none" to="/billing"
                 >Cancel your subscription</NuxtLink
               >
               before deleting your account.
             </p>
             <p v-else class="text-medium-emphasis">
-              You can delete all your data on httpSMS by clicking the button
+              You can delete all your data on DeliSMS by clicking the button
               below. This action is <b>irreversible</b> and all your data will
-              be permanently deleted from the httpSMS database instantly and it
+              be permanently deleted from the DeliSMS gateway database instantly and it
               cannot be recovered.
             </p>
             <VBtn
@@ -1344,12 +1342,12 @@ onMounted(async () => {
             <VDialog v-model="showDeleteAccountDialog" max-width="600px">
               <VCard>
                 <VCardTitle class="text-center"
-                  >Delete your httpSMS account</VCardTitle
+                  >Delete your DeliSMS account</VCardTitle
                 >
                 <VCardText class="mt-2 text-center text-medium-emphasis">
                   Are you sure you want to delete your account? This action is
                   <b>irreversible</b> and all your data will be permanently
-                  deleted from the httpSMS database instantly.
+                  deleted from the DeliSMS gateway database instantly.
                 </VCardText>
                 <VCardActions>
                   <VBtn
@@ -1406,7 +1404,7 @@ onMounted(async () => {
                 persistent-hint
                 :error="errorMessages.has('url')"
                 :error-messages="errorMessages.get('url')"
-                hint="A POST request will be sent to this URL every time an event is triggered in httpSMS."
+                hint="A POST request will be sent to this URL every time an event is triggered in DeliSMS."
                 placeholder="https://example.com/webhook"
               />
               <VTextField
@@ -1420,7 +1418,7 @@ onMounted(async () => {
                 placeholder="******************"
                 :error="errorMessages.has('signing_key')"
                 :error-messages="errorMessages.get('signing_key')"
-                hint="The signing key is used to verify the webhook is sent from httpSMS."
+                hint="The signing key is used to verify the webhook is sent from DeliSMS."
               />
               <VSelect
                 v-model="activeWebhook.events"
@@ -1434,7 +1432,7 @@ onMounted(async () => {
                 density="compact"
                 :error="errorMessages.has('events')"
                 :error-messages="errorMessages.get('events')"
-                hint="Select multiple httpSMS events to watch for"
+                hint="Select multiple DeliSMS events to watch for"
                 persistent-hint
               />
               <VSelect
@@ -1498,7 +1496,7 @@ onMounted(async () => {
           <VRow>
             <VCol class="pt-8">
               <p class="mt-n4 text-body-1">
-                Click the button below to add the httpSMS bot to your discord
+                Discord forwarding is inherited from the upstream gateway. Do not enable it for DeliSMS unless this lab explicitly validates the Discord integration
                 server. You need to do this so we can have permission to send
                 and receive messages on your discord server.
               </p>

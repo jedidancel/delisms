@@ -26,7 +26,7 @@ definePageMeta({
 })
 
 useHead({
-  title: 'Messages - httpSMS',
+  title: 'Messages - DeliSMS',
 })
 
 const route = useRoute()

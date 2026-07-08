@@ -1,1180 +1,377 @@
 <script setup lang="ts">
-import {
-  mdiCheckCircle,
-  mdiSend,
-  mdiGift,
-  mdiLightbulbOn60,
-  mdiCreation,
-  mdiLockOutline,
-  mdiLanguagePython,
-  mdiCellphoneKey,
-  mdiTallyMark1,
-  mdiTallyMark3,
-  mdiTallyMark2,
-  mdiLabel,
-  mdiLanguageJavascript,
-  mdiLanguagePhp,
-  mdiPlus,
-  mdiMinus,
-  mdiLanguageCsharp,
-  mdiLanguageJava,
-  mdiMicrosoftExcel,
-  mdiWebhook,
-  mdiClockOutline,
-  mdiArrowRightThin,
-  mdiPowershell,
-  mdiLanguageGo,
-} from '@mdi/js'
-
 definePageMeta({
   layout: 'website',
 })
 
 useSeoMeta({
-  title: 'Convert your Android phone into an SMS gateway - httpSMS',
+  title: 'DeliSMS Gateway Lab - External Android SMS Gateway for DeliChow',
   description:
-    'Turn your Android phone into an SMS gateway and send or receive text messages with a simple HTTP API. Get started free — no SMS provider or short code needed.',
-  ogTitle: 'Convert your Android phone into an SMS gateway',
+    'DeliSMS is an external Android-based SMS transport gateway for DeliChow lab validation, device pairing, SMS dispatch, and webhook proof.',
+  ogTitle: 'DeliSMS Gateway Lab',
   ogDescription:
-    'Send and receive SMS messages worldwide through your own Android phone using a simple HTTP API. No SMS provider, short code, or monthly minimum required.',
-  ogImage: 'https://httpsms.com/header.png',
+    'External Android SMS gateway foundation for DeliChow. Lab status, proof required, not yet Paid Client Release ready.',
+  ogImage: '/img/delisms-icon-256.png',
   twitterCard: 'summary_large_image',
 })
-
-const config = useRuntimeConfig()
-const { lgAndUp, mdAndUp, mdAndDown, md, smAndDown, xl } = useDisplay()
-
-const selectedTab = ref('javascript')
-const yearlyPricing = ref(false)
-const faqPanel = ref<number | undefined>(undefined)
-const pricing = ref(0)
-
-const pricingLabels = ['10K', '20K', '50K', '100K', '200K']
-const pricingLabelsFull = ['10,000', '20,000', '50,000', '100,000', '200,000']
-
-const planMessages = computed(() =>
-  pricingLabels[pricing.value].replace('K', ',000'),
-)
-const planMonthlyPrice = computed(() => [20, 35, 89, 175, 350][pricing.value])
-const planYearlyPrice = computed(
-  () => [200, 350, 1068, 2100, 4200][pricing.value],
-)
-const planYearlyMonthlyPrice = computed(
-  () => [16.66, 29.16, 89, 175, 350][pricing.value],
-)
 </script>
 
 <template>
-  <div>
-    <VContainer>
-      <VRow :class="{ 'py-4': lgAndUp }">
-        <VCol
-          cols="12"
-          md="6"
-          class="pt-8 pb-16"
-          :class="{
-            'text-center': mdAndDown,
-          }"
-        >
-          <h1
-            class="text-display-large font-weight-bold pb-1 gradient-header"
-            :class="{
-              'mt-16 font-size-45': lgAndUp,
-              'mt-10': md,
-              'mt-n8': smAndDown,
-            }"
-          >
-            Convert your Android phone into an SMS gateway.
-          </h1>
-          <h2 class="text-medium-emphasis text-headline-small mt-8 mb-8">
-            <span class="gradient-underline">Save money</span> by using your
-            phone to send and receive SMS messages via a simple programmable API
-            with end-to-end encryption.
-          </h2>
-          <div :class="{ 'text-center': mdAndDown }">
-            <VBtn color="primary" size="large" class="mt-4 mb-4" to="/login">
-              <VIcon v-if="lgAndUp" start :icon="mdiSend" />
-              Get Started
-            </VBtn>
-            <VBtn
-              size="large"
-              variant="tonal"
-              class="mt-4 mb-4 ml-4"
-              href="https://sandbox.httpsms.com"
-            >
-              <VIcon v-if="lgAndUp" start :icon="mdiCreation" color="#ffe500" />
-              Live Demo
-            </VBtn>
-          </div>
-          <p class="text-body-medium mt-2">
-            ⚡Trusted by <b>23,273+</b> users who send/receive more than
-            <b>500,000</b> messages per month.
-          </p>
-          <div class="mt-4" :class="{ 'text-center': mdAndDown }">
-            <VIcon color="success" :icon="mdiCheckCircle" />
-            Free to use
-            <VIcon class="ml-4" color="success" :icon="mdiCheckCircle" />
-            100% Open Source
-          </div>
-          <div v-if="xl" class="mt-4">
-            <a href="https://www.uneed.best/tool/httpsmscom">
-              <img
-                src="https://www.uneed.best/POTD1A.png"
-                style="width: 250px"
-                alt="Uneed POTD1 Badge"
-              />
-            </a>
-          </div>
-          <VDivider
-            v-if="mdAndDown"
-            class="mt-6 mr-16 bg-success"
-            :class="{ 'ml-16': mdAndDown }"
-          />
-        </VCol>
-        <VCol v-if="mdAndUp" cols="12" md="6" class="d-flex align-center">
-          <div
-            class="mx-auto"
-            style="max-width: 98%; width: 100%; aspect-ratio: 16/9"
-          >
-            <iframe
-              src="https://player.cloudinary.com/embed/?cloud_name=dnzklcz1h&public_id=httpsms.com"
-              width="100%"
-              height="100%"
-              style="border: none; border-radius: 8px"
-              allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-              allowfullscreen
-            />
-          </div>
-        </VCol>
-      </VRow>
-    </VContainer>
-
-    <!-- Features Section -->
-    <VSheet class="py-16">
+  <div class="landing-page">
+    <section class="hero-section">
       <VContainer>
-        <!-- Bulk SMS -->
-        <VRow class="mb-16">
-          <VCol cols="12" md="6" class="d-flex align-center" order-lg="2">
-            <div>
-              <h3
-                class="text-display-medium mb-1"
-                :class="{ 'mt-n8': mdAndUp }"
-              >
-                Bulk SMS
-                <VChip class="ma-2" color="pink" label>
-                  <VIcon start :icon="mdiLabel" />
-                  No code
-                </VChip>
-              </h3>
-              <h5 class="text-title-large font-weight-light my-2">
-                Fill in our bulk SMS
-                <a
-                  class="text-decoration-none"
-                  download
-                  href="/templates/httpsms-bulk.csv"
-                  >CSV template</a
-                >
-                or our
-                <a
-                  class="text-decoration-none"
-                  download
-                  href="/templates/httpsms-bulk.xlsx"
-                  >excel template</a
-                >
-                and upload it on httpSMS to send SMS messages to up to 1,000
-                recipients at once without writing any code.
-              </h5>
-              <VBtn
-                to="/blog/how-to-send-sms-messages-from-excel"
-                color="primary"
-              >
-                <VIcon start :icon="mdiMicrosoftExcel" />
-                Integration Guide
+        <VRow align="center" class="py-16">
+          <VCol cols="12" md="7">
+            <VChip color="primary" variant="tonal" class="mb-6">
+              Lab / Foundation Gateway
+            </VChip>
+
+            <h1 class="hero-title">
+              DeliSMS external Android SMS gateway for DeliChow.
+            </h1>
+
+            <p class="hero-copy">
+              DeliSMS is a self-hosted gateway lab that connects DeliChow SMS
+              orchestration to an Android phone, carrier SMS, and webhook events.
+              It is designed as a separate external service, not as code inside
+              the closed-source DeliChow SaaS repo.
+            </p>
+
+            <div class="d-flex flex-wrap ga-3 mt-8">
+              <VBtn color="primary" size="large" to="/login">
+                Operator Login
+              </VBtn>
+              <VBtn variant="tonal" size="large" href="#how-it-works">
+                View Gateway Flow
               </VBtn>
             </div>
-          </VCol>
-          <VCol cols="12" md="6" order-lg="1">
-            <VImg
-              class="mb-4"
-              max-height="400"
-              :src="'/img/bulk-sms-template.png'"
-            />
-          </VCol>
-        </VRow>
 
-        <!-- Integrations -->
-        <VRow class="mb-16 mt-16">
-          <VCol cols="12" md="6" class="d-flex align-center" order-lg="1">
-            <div>
-              <h3 class="text-display-medium mb-1">
-                Integrations
-                <VChip class="ma-2" color="pink" label>
-                  <VIcon start :icon="mdiLabel" />
-                  No code
-                </VChip>
-              </h3>
-              <h5 class="text-title-large font-weight-light my-2">
-                Connect your workflow with thousands of other apps with the
-                power of Zapier. For example you can setup an automation to send
-                personalized SMS messages each time someone makes an order from
-                your shopify store or each time a new row is added to a Google
-                spreadsheet.
-              </h5>
-              <VBtn
-                to="/blog/send-sms-when-new-row-is-added-to-google-sheets-using-zapier"
-                color="primary"
-              >
-                Zapier Integration Guide
-              </VBtn>
-            </div>
-          </VCol>
-          <VCol cols="12" md="6" order-lg="2">
-            <VImg
-              class="mb-4"
-              :class="{ 'mt-16': mdAndUp }"
-              max-height="400"
-              :src="'/img/zapier-logo.svg'"
-            />
-          </VCol>
-        </VRow>
-
-        <!-- Webhooks -->
-        <VRow class="mb-16 mt-16">
-          <VCol cols="12" md="6" class="d-flex align-center" order-lg="2">
-            <div>
-              <h3 class="text-display-medium mb-1">Webhooks</h3>
-              <h5 class="text-title-large font-weight-light my-2">
-                If you want to build advanced integrations, we support callback
-                URLs. The httpSMS platform can forward SMS messages received on
-                your Android phone to your server using a callback URL which you
-                provide.
-              </h5>
-              <VBtn
-                target="_blank"
-                href="https://docs.httpsms.com/webhooks/introduction"
-                color="primary"
-              >
-                <VIcon start :icon="mdiWebhook" />
-                Documentation
-              </VBtn>
-            </div>
-          </VCol>
-          <VCol cols="12" md="6" order-lg="1">
-            <VImg class="mb-4" max-height="300" :src="'/img/connection.svg'" />
-          </VCol>
-        </VRow>
-
-        <!-- Control Sending -->
-        <VRow class="mb-16 mt-16">
-          <VCol cols="12" md="6" class="d-flex align-center" order-lg="1">
-            <div>
-              <h3 class="text-display-medium mb-1">Control Sending</h3>
-              <h5 class="text-title-large font-weight-light my-2">
-                Send SMS messages without going over your mobile carrier
-                limitations. If you set a rate e.g 3 messages per minute, we
-                will queue up your messages and send them at a rate of 1 message
-                per 20 seconds.
-              </h5>
-              <VBtn
-                href="https://docs.httpsms.com/features/control-sms-send-rate"
-                color="primary"
-              >
-                <VIcon start :icon="mdiArrowRightThin" />
-                Documentation
-              </VBtn>
-            </div>
-          </VCol>
-          <VCol cols="12" md="6" order-lg="2">
-            <VImg class="mb-4" max-height="300" :src="'/img/queue.svg'" />
-          </VCol>
-        </VRow>
-
-        <!-- Monitoring -->
-        <VRow class="mb-16 mt-16">
-          <VCol cols="12" md="6" class="d-flex align-center" order-lg="2">
-            <div>
-              <h3 class="text-display-medium mb-1">Monitoring</h3>
-              <h5 class="text-title-large font-weight-light my-2">
-                If your android phone goes offline for some reason and it can't
-                send SMS messages, we will send you a notification immediately.
-              </h5>
-            </div>
-          </VCol>
-          <VCol cols="12" md="6" order-lg="1">
-            <VImg class="mb-4" max-height="300" :src="'/img/alert.svg'" />
-          </VCol>
-        </VRow>
-
-        <!-- Open Source -->
-        <VRow class="mt-16 mb-16">
-          <VCol cols="12" md="6" class="d-flex align-center" order-lg="1">
-            <div>
-              <h3 class="text-display-medium mb-1">Open Source</h3>
-              <h5 class="text-title-large mb-3 font-weight-light my-2">
-                httpSMS is transparent and fully open source. The source code is
-                available on GitHub. Feel free to fork it, verify it or submit a
-                pull request.
-              </h5>
-              <a
-                class="text-decoration-none"
-                :href="config.public.appGithubUrl"
-              >
-                <img
-                  alt="GitHub Repo stars"
-                  height="32"
-                  src="https://img.shields.io/github/stars/NdoleStudio/httpsms?style=social"
-                />
-              </a>
-            </div>
-          </VCol>
-          <VCol cols="12" md="6" order-lg="2">
-            <VImg
-              class="mb-4"
-              max-height="400"
-              :src="'/img/httpsms-github.png'"
-            />
-          </VCol>
-        </VRow>
-
-        <!-- Encryption -->
-        <VRow class="mt-16">
-          <VCol cols="12" md="6" class="d-flex align-center" order-lg="2">
-            <div>
-              <h3 class="text-display-medium mb-1">Encryption 🔐</h3>
-              <h5 class="text-title-large mb-3 font-weight-light my-2">
-                Take control of your privacy with our end-to-end encrypted SMS
-                feature. Safeguard your messages from prying eyes, ensuring
-                absolute confidentiality using the military grade
-                <a
-                  class="text-decoration-none"
-                  href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard"
-                  >AES-256 encryption</a
-                >
-                algorithm.
-              </h5>
-              <VBtn
-                to="/blog/end-to-end-encryption-to-sms-messages"
-                color="primary"
-              >
-                <VIcon start :icon="mdiLockOutline" />
-                Setup end-to-end encryption
-              </VBtn>
-            </div>
-          </VCol>
-          <VCol cols="12" md="6" order-lg="1">
-            <VImg
-              class="mb-4"
-              max-height="300"
-              :src="'/img/mobile-encryption.svg'"
-            />
-          </VCol>
-        </VRow>
-
-        <!-- Multiple Phones -->
-        <VRow class="mt-16">
-          <VCol cols="12" md="6" class="d-flex align-center">
-            <div>
-              <h3 class="text-display-medium mb-1">Multiple Phones</h3>
-              <h5 class="text-title-large mb-3 font-weight-light my-2">
-                Setup the httpSMS gateway Android app on multiple phones
-                independently and securely without sharing data under one
-                account by creating unique phone API keys.
-              </h5>
-              <VBtn
-                href="https://docs.httpsms.com/features/phone-api-keys"
-                color="primary"
-              >
-                <VIcon start :icon="mdiCellphoneKey" />
-                Documentation
-              </VBtn>
-            </div>
-          </VCol>
-          <VCol cols="12" md="6">
-            <VImg
-              class="mb-4"
-              max-height="300"
-              :src="'/img/manage-phones.svg'"
-            />
-          </VCol>
-        </VRow>
-
-        <!-- Schedule Messages -->
-        <VRow class="mt-16">
-          <VCol cols="12" md="6" class="d-flex align-center" order-lg="2">
-            <div>
-              <h3 class="text-display-medium mb-1">Schedule Text Messages</h3>
-              <h5 class="text-headline-small my-2 font-weight-light">
-                Control when your SMS will reach your recipients, allowing you
-                to perfectly time promotions, critical alerts etc by scheduling
-                your messages in advance.
-              </h5>
-              <VBtn
-                href="https://docs.httpsms.com/features/scheduling-sms-messages"
-                color="primary"
-              >
-                <VIcon start :icon="mdiClockOutline" />
-                Documentation
-              </VBtn>
-            </div>
-          </VCol>
-          <VCol cols="12" md="6" order-lg="1">
-            <VImg
-              class="mb-4"
-              max-height="300"
-              :src="'/img/schedule-messages.svg'"
-            />
-          </VCol>
-        </VRow>
-      </VContainer>
-    </VSheet>
-
-    <!-- Get Started Section -->
-    <VContainer class="pb-16">
-      <VRow>
-        <VCol>
-          <h2 class="text-display-large text-center mb-0">Get Started</h2>
-        </VCol>
-      </VRow>
-      <VRow>
-        <VCol cols="12">
-          <VRow class="align-baseline">
-            <VCol cols="12" md="5" class="pr-4">
-              <VTimeline
-                truncate-line="both"
-                density="compact"
-                class="mt-10 ml-n4"
-              >
-                <VTimelineItem dot-color="primary" :icon="mdiTallyMark1">
-                  <VCard variant="elevated">
-                    <VCardTitle class="text-headline-medium">Step 1</VCardTitle>
-                    <VCardText class="text-body-large">
-                      <NuxtLink
-                        class="font-weight-bold text-decoration-none"
-                        to="/login"
-                      >
-                        Create an account
-                      </NuxtLink>
-                      on httpsms.com and obtain your API key on the settings
-                      page.
-                    </VCardText>
-                  </VCard>
-                </VTimelineItem>
-                <VTimelineItem dot-color="primary" :icon="mdiTallyMark2">
-                  <VCard variant="elevated">
-                    <VCardTitle class="text-headline-medium">Step 2</VCardTitle>
-                    <VCardText class="text-body-large">
-                      <a
-                        download
-                        class="font-weight-bold text-decoration-none"
-                        :href="config.public.appDownloadUrl"
-                        >Download</a
-                      >
-                      and install the companion android application on your
-                      phone and sign in using your API Key.
-                    </VCardText>
-                  </VCard>
-                </VTimelineItem>
-                <VTimelineItem dot-color="primary" :icon="mdiTallyMark3">
-                  <VCard variant="elevated">
-                    <VCardTitle class="text-headline-medium">Step 3</VCardTitle>
-                    <VCardText class="text-body-large">
-                      Start sending and receiving SMS messages using our rich
-                      HTTP API. You can find the documentation on
-                      <a
-                        class="text-decoration-none"
-                        :href="config.public.appDocumentationUrl"
-                      >
-                        {{ config.public.appDocumentationUrl }}
-                      </a>
-                    </VCardText>
-                  </VCard>
-                </VTimelineItem>
-              </VTimeline>
-            </VCol>
-            <VCol cols="12" md="7">
-              <div class="w-100" :class="{ 'mt-n8': mdAndUp }">
-                <VTabs
-                  v-model="selectedTab"
-                  color="primary"
-                  bg-color="#212121"
-                  show-arrows
-                >
-                  <VTab value="javascript">
-                    <VIcon
-                      color="#efd81d"
-                      class="mr-1"
-                      :icon="mdiLanguageJavascript"
-                    />
-                    Javascript
-                  </VTab>
-                  <VTab value="php">
-                    <VIcon
-                      color="#777bb3"
-                      class="mr-2"
-                      :icon="mdiLanguagePhp"
-                    />
-                    PHP
-                  </VTab>
-                  <VTab value="python">
-                    <VIcon
-                      color="#ffffff"
-                      class="mr-2"
-                      :icon="mdiLanguagePython"
-                    />
-                    Python
-                  </VTab>
-                  <VTab value="go">
-                    <VIcon color="#00aed8" class="mr-2" :icon="mdiLanguageGo" />
-                    Go
-                  </VTab>
-                  <VTab value="java">
-                    <VIcon
-                      color="#0c89c7"
-                      class="mr-2"
-                      :icon="mdiLanguageJava"
-                    />
-                    Java
-                  </VTab>
-                  <VTab value="curl">
-                    <VIcon color="primary" class="mr-2" :icon="mdiPowershell" />
-                    cURL
-                  </VTab>
-                  <VTab value="c-sharp">
-                    <VIcon
-                      color="#68217a"
-                      class="mr-2"
-                      :icon="mdiLanguageCsharp"
-                    />
-                    C#
-                  </VTab>
-                </VTabs>
-                <VTabsWindow v-model="selectedTab" v-highlight>
-                  <VTabsWindowItem value="javascript">
-                    <pre
-                      class="pa-4 bg-surface rounded mt-2"
-                    ><code class="language-javascript">import HttpSms from 'httpsms'
-
-const client = new HttpSms('' /* Get the API Key from https://httpsms.com/settings */);
-
-client.messages.postSend({
-    content:   'This is a sample text message',
-    from:      '+18005550199', // Put the correct phone number here
-    to:        '+18005550100', // Put the correct phone number here
-})
-.then((message) => {
-    console.log(message.id); // log the ID of the sent message
-})</code></pre>
-                  </VTabsWindowItem>
-                  <VTabsWindowItem value="php">
-                    <pre
-                      class="pa-4 bg-surface rounded mt-2"
-                    ><code class="language-php">&lt;?php
-$apiKey = "Get API Key from https://httpsms.com/settings";
-
-$options = array(
-  'http' => array(
-    'method'  => 'POST',
-    'content' => json_encode( [
-        'content' => 'This is a sample text message',
-        'from'    => "+18005550199",
-        'to'      => "+18005550100"
-    ]),
-    'header'=>  "Content-Type: application/json\r\n" .
-                "Accept: application/json\r\n" .
-                "x-api-key: $apiKey\r\n"
-    )
-);
-
-$context  = stream_context_create( $options );
-$result = file_get_contents( "https://api.httpsms.com/v1/messages/send", false, $context );
-
-echo $result;</code></pre>
-                  </VTabsWindowItem>
-                  <VTabsWindowItem value="python">
-                    <pre
-                      class="pa-4 bg-surface rounded mt-2"
-                    ><code class="language-python">import requests
-import json
-
-api_key = "Get API Key from https://httpsms.com/settings"
-
-url = 'https://api.httpsms.com/v1/messages/send'
-
-headers = {
-    'x-api-key': api_key,
-    'Accept': 'application/json',
-    'Content-Type': 'application/json'
-}
-
-payload = {
-    "content": "This is a sample text message",
-    "from": "+18005550199",
-    "to": "+18005550100"
-}
-
-response = requests.post(url, headers=headers, data=json.dumps(payload))
-
-print(json.dumps(response.json(), indent=4))</code></pre>
-                  </VTabsWindowItem>
-                  <VTabsWindowItem value="go">
-                    <pre
-                      class="pa-4 bg-surface rounded mt-2"
-                    ><code class="language-go">import "github.com/NdoleStudio/httpsms-go"
-
-client := htpsms.New(htpsms.WithAPIKey(/* API Key from https://httpsms.com/settings */))
-
-client.Messages.Send(context.Background(), &amp;httpsms.MessageSendParams{
-    Content: "This is a sample text message",
-    From:    "+18005550199",
-    To:      "+18005550100",
-})</code></pre>
-                  </VTabsWindowItem>
-                  <VTabsWindowItem value="java">
-                    <pre
-                      class="pa-4 bg-surface rounded mt-2"
-                    ><code class="language-java">var client = HttpClient.newHttpClient();
-var apiKey = "Get API Key from https://httpsms.com/settings";
-
-var payload = """
-        {
-            "content": "This is a sample text message",
-            "from": "+18005550199",
-            "to": "+18005550100"
-        }
-        """;
-
-var request = HttpRequest.newBuilder()
-        .uri(URI.create("https://api.httpsms.com/v1/messages/send"))
-        .header("accept", "application/json")
-        .header("Content-Type", "application/json")
-        .header("x-api-key", apiKey)
-        .POST(HttpRequest.BodyPublishers.ofString(payload))
-        .build();
-
-var response = client.send(request, HttpResponse.BodyHandlers.ofString());
-System.out.println(response.body());</code></pre>
-                  </VTabsWindowItem>
-                  <VTabsWindowItem value="curl">
-                    <pre
-                      class="pa-4 bg-surface rounded mt-2"
-                    ><code class="language-bash">curl --location --request POST 'https://api.httpsms.com/v1/messages/send' \
---header 'x-api-key: Get API Key from https://httpsms.com/settings' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "from": "+18005550199",
-    "to": "+18005550100",
-    "content": "This is a sample text message"
-}'</code></pre>
-                  </VTabsWindowItem>
-                  <VTabsWindowItem value="c-sharp">
-                    <pre
-                      class="pa-4 bg-surface rounded mt-2"
-                    ><code class="language-csharp">var client = new HttpClient();
-client.DefaultRequestHeaders.Add("x-api-key", ""/* Get API Key from https://httpsms.com/settings */);
-
-var response = await client.PostAsync(
-    "https://api.httpsms.com/v1/messages/send",
-    new StringContent(
-        JsonSerializer.Serialize(new {
-            from = "+18005550199",
-            To = "+18005550100",
-            Content = "This is a sample text message",
-        }),
-        Encoding.UTF8,
-        "application/json"
-    )
-);
-
-Console.WriteLine(await response.Content.ReadAsStringAsync());</code></pre>
-                  </VTabsWindowItem>
-                </VTabsWindow>
-              </div>
-            </VCol>
-          </VRow>
-        </VCol>
-      </VRow>
-    </VContainer>
-
-    <!-- Pricing Section -->
-    <VSheet class="mt-16 pb-16">
-      <VContainer>
-        <VRow>
-          <VCol md="6" offset-md="3">
-            <h2
-              id="pricing"
-              style="text-decoration-color: #329ef4"
-              class="text-center text-display-large mb-4 text-decoration-underline dark:text-white"
-            >
-              Pricing
-            </h2>
-            <h4 class="text-center text-headline-small text-medium-emphasis">
-              Most of the httpSMS features are completely
-              <span class="text-primary">free</span> but if you want a little
-              extra, you can go pro
-            </h4>
-            <div class="d-flex justify-center mt-4 align-center">
-              <p
-                class="text-headline-small mr-3 mt-3"
-                :class="{ 'text-medium-emphasis': yearlyPricing }"
-              >
-                Monthly
-              </p>
-              <VSwitch
-                v-model="yearlyPricing"
-                color="primary"
-                class="mt-n2"
-                hide-details
-              />
-              <p
-                class="text-headline-small ml-3 mt-3"
-                :class="{ 'text-medium-emphasis': !yearlyPricing }"
-              >
-                Yearly
-                <VChip color="primary" size="small">
-                  <VIcon start :icon="mdiGift" size="small" />
-                  2 months free
-                </VChip>
-              </p>
-            </div>
-          </VCol>
-        </VRow>
-        <VRow>
-          <VCol cols="12">
-            <VSlider
-              v-model="pricing"
-              :tick-labels="lgAndUp ? pricingLabelsFull : pricingLabels"
-              :max="4"
-              step="1"
-              color="primary"
-              thumb-color="primary"
-              thumb-label="always"
-              thumb-size="16"
-              tick-size="8"
-              show-ticks="always"
-            >
-              <template #thumb-label>
-                {{ pricingLabels[pricing] }}
-              </template>
-            </VSlider>
-          </VCol>
-        </VRow>
-        <VRow>
-          <!-- Free Plan -->
-          <VCol cols="12" lg="4">
-            <VCard elevation="4" color="#121212">
-              <VCardText>
-                <h1 class="text-center text-display-medium mt-0 mb-4">Free</h1>
-                <p
-                  class="text-body-large text-center mt-0 text-medium-emphasis"
-                >
-                  Try sending and receiving SMS on your hobby websites and
-                  experiments.
-                </p>
-                <p class="text-center">
-                  <span class="text-display-small">$0</span>
-                </p>
-                <p class="text-center mt-n3 text-medium-emphasis">
-                  No credit card required
-                </p>
-                <VBtn block to="/login" variant="tonal" size="large"
-                  >Get Started</VBtn
-                >
-                <p class="mt-6 text-md-body-large text-title-medium">
-                  <VIcon
-                    color="primary"
-                    class="mt-n1"
-                    start
-                    :icon="mdiCheckCircle"
-                  />
-                  Send or receive up to <b>200</b> SMS/month
-                </p>
-                <p class="text-md-body-large text-title-medium mt-n3">
-                  <VIcon
-                    color="primary"
-                    class="mt-n1"
-                    start
-                    :icon="mdiCheckCircle"
-                  />
-                  Offline notifications for your phone
-                </p>
-                <p class="text-md-body-large text-title-medium mt-n3">
-                  <VIcon
-                    color="primary"
-                    class="mt-n1"
-                    start
-                    :icon="mdiCheckCircle"
-                  />
-                  Forward received messages via webhook
-                </p>
-                <p class="text-md-body-large text-title-medium mt-n3">
-                  <VIcon
-                    color="primary"
-                    class="mt-n1"
-                    start
-                    :icon="mdiCheckCircle"
-                  />
-                  Basic email support
-                </p>
-              </VCardText>
-            </VCard>
-          </VCol>
-          <!-- Pro Plan -->
-          <VCol cols="12" lg="4">
-            <VCard elevation="4" color="#000000">
-              <VCardText>
-                <h1
-                  class="text-center text-display-medium mt-0 mb-4 text-primary"
-                >
-                  Pro
-                </h1>
-                <p
-                  class="text-body-large text-center mt-0 text-medium-emphasis"
-                >
-                  Send and receive more SMS messages like a pro with advanced
-                  features.
-                </p>
-                <p v-if="!yearlyPricing" class="text-center">
-                  <span class="text-display-small">$10</span>/month
-                </p>
-                <p v-else class="text-center">
-                  <span class="text-display-small">$100</span>/year
-                </p>
-                <p
-                  v-if="!yearlyPricing"
-                  class="text-center mt-n3 text-medium-emphasis"
-                >
-                  or <b>$100</b> per year
-                </p>
-                <p v-else class="text-center mt-n3 text-medium-emphasis">
-                  or <b>$8.33</b> per month
-                </p>
-                <VBtn block color="primary" to="/login" size="large"
-                  >Try For Free</VBtn
-                >
-                <p class="mt-6 text-md-body-large text-title-medium">
-                  <VIcon
-                    color="primary"
-                    class="mt-n1"
-                    start
-                    :icon="mdiCheckCircle"
-                  />
-                  Send or receive up to <b>5,000</b> SMS/month
-                </p>
-                <p class="text-md-body-large text-title-medium mt-n3">
-                  <VIcon
-                    color="primary"
-                    class="mt-n1"
-                    start
-                    :icon="mdiCheckCircle"
-                  />
-                  Offline notifications for your phone
-                </p>
-                <p class="text-md-body-large text-title-medium mt-n3">
-                  <VIcon
-                    color="primary"
-                    class="mt-n1"
-                    start
-                    :icon="mdiCheckCircle"
-                  />
-                  Forward received messages via webhook
-                </p>
-                <p class="text-md-body-large text-title-medium mt-n3">
-                  <VIcon
-                    color="primary"
-                    class="mt-n1"
-                    start
-                    :icon="mdiCheckCircle"
-                  />
-                  Priority support
-                </p>
-              </VCardText>
-            </VCard>
-          </VCol>
-          <!-- Custom Plan -->
-          <VCol cols="12" lg="4">
-            <VCard elevation="4" color="#121212">
-              <VCardText>
-                <h1 class="text-center text-display-medium mt-0 mb-4">
-                  {{ pricingLabels[pricing] }} Plan
-                </h1>
-                <p
-                  class="text-body-large text-center mt-0 text-medium-emphasis"
-                >
-                  Send and receive up to {{ planMessages }} SMS messages like a
-                  power user.
-                </p>
-                <p v-if="!yearlyPricing" class="text-center">
-                  <span class="text-display-small">${{ planMonthlyPrice }}</span
-                  >/month
-                </p>
-                <p v-else class="text-center">
-                  <span class="text-display-small">${{ planYearlyPrice }}</span
-                  >/year
-                </p>
-                <p
-                  v-if="!yearlyPricing"
-                  class="text-center mt-n3 text-medium-emphasis"
-                >
-                  or <b>${{ planYearlyPrice }}</b> per year
-                </p>
-                <p v-else class="text-center mt-n3 text-medium-emphasis">
-                  or <b>${{ planYearlyMonthlyPrice }}</b> per month
-                </p>
-                <VBtn block variant="tonal" to="/login" size="large"
-                  >Try For Free</VBtn
-                >
-                <p class="mt-6 text-md-body-large text-title-medium">
-                  <VIcon
-                    color="primary"
-                    class="mt-n1"
-                    start
-                    :icon="mdiCheckCircle"
-                  />
-                  Send or receive up to
-                  <b>{{ pricingLabels[pricing] }}</b> SMS/month
-                </p>
-                <p class="text-md-body-large text-title-medium mt-n3">
-                  <VIcon
-                    color="primary"
-                    class="mt-n1"
-                    start
-                    :icon="mdiCheckCircle"
-                  />
-                  Offline notifications for your phone
-                </p>
-                <p class="text-md-body-large text-title-medium mt-n3">
-                  <VIcon
-                    color="primary"
-                    class="mt-n1"
-                    start
-                    :icon="mdiCheckCircle"
-                  />
-                  Forward received messages via webhook
-                </p>
-                <p class="text-md-body-large text-title-medium mt-n3">
-                  <VIcon
-                    color="primary"
-                    class="mt-n1"
-                    start
-                    :icon="mdiCheckCircle"
-                  />
-                  Priority support
-                </p>
-              </VCardText>
-            </VCard>
-          </VCol>
-        </VRow>
-        <VRow>
-          <VCol>
             <VAlert
-              color="info"
-              :icon="mdAndUp ? mdiLightbulbOn60 : undefined"
-              :prominent="mdAndUp"
+              type="warning"
               variant="tonal"
+              class="mt-8"
+              title="Not yet Paid Client Release ready"
             >
-              Feel free to <a href="mailto:arnold@httpsms.com">contact us</a> if
-              you need a bigger plan, or if you want us to install the httpSMS
-              API on your dedicated server. If you would still like to support
-              us, please donate via
-              <a href="https://github.com/sponsors/NdoleStudio"
-                >GitHub Sponsors</a
-              >💖
+              This gateway is currently a lab/foundation service. Merchant
+              rollout requires stronger onboarding, monitoring, quota controls,
+              failure alerts, support playbooks, and DeliChow OS integration.
             </VAlert>
           </VCol>
+
+          <VCol cols="12" md="5">
+            <VCard class="status-card pa-6" elevation="10">
+              <div class="text-overline text-primary mb-2">
+                Current lab proof
+              </div>
+              <h2 class="text-h4 font-weight-bold mb-6">
+                Custom-domain smoke passed
+              </h2>
+
+              <div class="proof-row">
+                <span>Web console</span>
+                <strong>sms.delichow.ph</strong>
+              </div>
+              <div class="proof-row">
+                <span>Gateway API</span>
+                <strong>api.sms.delichow.ph</strong>
+              </div>
+              <div class="proof-row">
+                <span>Android app</span>
+                <strong>DeliSMS</strong>
+              </div>
+              <div class="proof-row">
+                <span>SMS dispatch</span>
+                <strong>Passed</strong>
+              </div>
+              <div class="proof-row">
+                <span>Webhook event</span>
+                <strong>message.phone.delivered</strong>
+              </div>
+            </VCard>
+          </VCol>
         </VRow>
       </VContainer>
-    </VSheet>
+    </section>
 
-    <!-- Testimonials Section -->
-    <VContainer class="mt-16">
-      <VRow>
-        <VCol cols="12" md="6">
-          <VCard
-            href="https://www.g2.com/products/httpsms/reviews/httpsms-review-8589834"
-          >
-            <VCardText class="pt-0 pb-0">
-              <div class="d-flex">
-                <VAvatar class="mt-6">
-                  <VImg
-                    alt="Joysankar M."
-                    src="https://images.g2crowd.com/uploads/avatar/image/1662077/thumb_square_d5706804d1b343744a8feb693827fe34.jpeg"
-                  />
-                </VAvatar>
-                <div>
-                  <p class="text-title-medium ml-3">Joysankar M.</p>
-                  <VRating
-                    class="mt-n7"
-                    color="yellow-darken-3"
-                    :model-value="4.5"
-                    half-increments
-                    readonly
-                  />
-                </div>
-                <VSpacer />
-                <div style="width: 30px" class="mt-4">
-                  <VImg
-                    max-height="30"
-                    src="https://company.g2.com/hs-fs/hubfs/brand-guide/reversed-g2@2x.png"
-                  />
-                </div>
-              </div>
-              <p class="text-title-large font-weight-light mt-0">
-                httpSMS is free platform which transforms your phone into an sms
-                server! It has no hard limit also. It is an
-                <b>innovative</b> idea, I have not seen such tech before. If you
-                have an <b>sms active pack</b> in your phone then good to go
-                with httpSMS.
-              </p>
-            </VCardText>
-          </VCard>
-        </VCol>
-        <VCol cols="12" md="6">
-          <VCard href="https://www.uneed.best/tool/httpsmscom?tab=comments">
-            <VCardText class="pb-0">
-              <div class="d-flex">
-                <VAvatar class="mt-2">
-                  <VImg
-                    alt="Edmund Ciego Profile Picture"
-                    src="https://lh3.googleusercontent.com/a/ACg8ocJktUViyMcJvzkPNpza7SZ3ql_nwOAzYk0uJ27TF5L_z0bRoPKE=s96-c"
-                  />
-                </VAvatar>
-                <div>
-                  <p class="text-title-medium mt-0 ml-3">Edmund Ciego</p>
-                  <VRating
-                    class="mt-n7"
-                    color="yellow-darken-3"
-                    :model-value="5"
-                    half-increments
-                    readonly
-                  />
-                </div>
-                <VSpacer />
-                <div>
-                  <v-img width="64" src="/img/logos/uneed.svg" />
-                </div>
-              </div>
-              <p class="text-title-large font-weight-light mt-0">
-                "<b>Outstanding product</b>. Literally have been using this for
-                years since we don't have an sms gateways that can handle http
-                requests costing less than <b>50 cent per sms</b> in my Country.
-                Love the product and the support! Great work Arnold!"
-              </p>
-            </VCardText>
-          </VCard>
-        </VCol>
-      </VRow>
-    </VContainer>
-
-    <!-- FAQ Section -->
-    <VContainer class="pb-16">
-      <VRow>
-        <VCol md="8" offset-md="2">
-          <h2
-            class="text-md-display-large mb-4 text-center text-display-medium"
-          >
-            Frequently Asked Questions
-          </h2>
-          <p class="text-center text-title-large mt-4 text-medium-emphasis">
-            If you still cannot find the answer to your question,
-            <a href="mailto:arnold@httpsms.com">send us an email</a> or ask in
-            our <a href="https://discord.gg/kGk8HVqeEZ">Discord</a> channel.
+    <section id="how-it-works" class="py-16">
+      <VContainer>
+        <div class="section-heading">
+          <VChip color="primary" variant="tonal" class="mb-4">
+            Gateway flow
+          </VChip>
+          <h2>How DeliSMS fits the DeliChow SMS path</h2>
+          <p>
+            The gateway owns SMS transport and Android device communication.
+            DeliChow OS remains responsible for tenant rules, notification
+            orchestration, billing logic, consent, quotas, fallback decisions,
+            and audit records.
           </p>
-        </VCol>
-      </VRow>
-      <VRow>
-        <VCol md="8" offset-md="2" class="mb-16">
-          <VExpansionPanels v-model="faqPanel">
-            <VExpansionPanel>
-              <VExpansionPanelTitle
-                class="text-title-large text-md-headline-small"
-              >
-                Can I install the app on my iPhone?
-                <template #actions>
-                  <VIcon :icon="faqPanel === 0 ? mdiMinus : mdiPlus" />
-                </template>
-              </VExpansionPanelTitle>
-              <VExpansionPanelText>
-                <p class="mt-4">
-                  The httpSMS application works only on Android phones at the
-                  moment since Apple doesn't allow you to install a custom SMS
-                  messaging app.
-                </p>
-              </VExpansionPanelText>
-            </VExpansionPanel>
-            <VExpansionPanel>
-              <VExpansionPanelTitle
-                class="text-title-large text-md-headline-small"
-              >
-                What's the minimum supported Android version?
-                <template #actions>
-                  <VIcon :icon="faqPanel === 1 ? mdiMinus : mdiPlus" />
-                </template>
-              </VExpansionPanelTitle>
-              <VExpansionPanelText>
-                <p class="mt-4">
-                  The httpSMS Android app works from Android 9 (Pie) and above.
-                  So you can install the application on your old Android phone
-                  which you don't use anymore.
-                </p>
-              </VExpansionPanelText>
-            </VExpansionPanel>
-            <VExpansionPanel>
-              <VExpansionPanelTitle
-                class="text-title-large text-md-headline-small"
-              >
-                Can I send unlimited number of messages per month?
-                <template #actions>
-                  <VIcon :icon="faqPanel === 2 ? mdiMinus : mdiPlus" />
-                </template>
-              </VExpansionPanelTitle>
-              <VExpansionPanelText>
-                <p class="mt-4">
-                  We do have packages that allow up to 200,000 SMS messages per
-                  month but you can
-                  <a href="mailto:arnold@httpsms.com">send us an email</a> if
-                  you will like to send more messages so we create a custom plan
-                  just for you.
-                </p>
-              </VExpansionPanelText>
-            </VExpansionPanel>
-            <VExpansionPanel>
-              <VExpansionPanelTitle
-                class="text-title-large text-md-headline-small"
-              >
-                Can I change the sender of the SMS message?
-                <template #actions>
-                  <VIcon :icon="faqPanel === 3 ? mdiMinus : mdiPlus" />
-                </template>
-              </VExpansionPanelTitle>
-              <VExpansionPanelText>
-                <p class="mt-4">
-                  No you cannot. When you send an SMS message using the httpSMS
-                  app it uses your SIM card to send the message so the recipient
-                  will see your phone number as the sender of the SMS. You
-                  cannot use your brand name as the sender ID.
-                </p>
-              </VExpansionPanelText>
-            </VExpansionPanel>
-          </VExpansionPanels>
-        </VCol>
-      </VRow>
-    </VContainer>
+        </div>
+
+        <VRow class="mt-8">
+          <VCol cols="12" md="4">
+            <VCard class="info-card pa-6" height="100%">
+              <div class="step-number">01</div>
+              <h3>DeliChow sends through an adapter</h3>
+              <p>
+                DeliChow OS should call DeliSMS through HTTP APIs only. Gateway
+                source must remain separate from the closed-source SaaS repo.
+              </p>
+            </VCard>
+          </VCol>
+
+          <VCol cols="12" md="4">
+            <VCard class="info-card pa-6" height="100%">
+              <div class="step-number">02</div>
+              <h3>DeliSMS dispatches to Android</h3>
+              <p>
+                The gateway sends through Firebase Cloud Messaging to the paired
+                Android phone, which then sends the carrier SMS using its SIM.
+              </p>
+            </VCard>
+          </VCol>
+
+          <VCol cols="12" md="4">
+            <VCard class="info-card pa-6" height="100%">
+              <div class="step-number">03</div>
+              <h3>Events return by webhook</h3>
+              <p>
+                Delivery, failure, expiration, and device events must return to
+                DeliChow through signed webhook callbacks for audit and support.
+              </p>
+            </VCard>
+          </VCol>
+        </VRow>
+
+        <VCard class="flow-card pa-6 mt-8">
+          <div class="flow-text">
+            DeliChow OS → Notification Orchestrator → SMS Gateway Adapter →
+            DeliSMS Gateway → FCM → Tenant Android Phone → Carrier SMS →
+            Webhook back to DeliChow
+          </div>
+        </VCard>
+      </VContainer>
+    </section>
+
+    <section class="py-16 surface-section">
+      <VContainer>
+        <div class="section-heading">
+          <VChip color="primary" variant="tonal" class="mb-4">
+            Console purpose
+          </VChip>
+          <h2>Built for operational visibility</h2>
+          <p>
+            The console should help operators see device state, send test SMS,
+            inspect messages, verify webhooks, and diagnose failures without
+            guessing.
+          </p>
+        </div>
+
+        <VRow class="mt-8">
+          <VCol cols="12" md="3">
+            <VCard class="metric-card pa-5" height="100%">
+              <h3>Phones</h3>
+              <p>Connection status, heartbeat, pairing state, and last activity.</p>
+            </VCard>
+          </VCol>
+
+          <VCol cols="12" md="3">
+            <VCard class="metric-card pa-5" height="100%">
+              <h3>Messages</h3>
+              <p>Recipient, sender phone, status, timestamps, and failure reason.</p>
+            </VCard>
+          </VCol>
+
+          <VCol cols="12" md="3">
+            <VCard class="metric-card pa-5" height="100%">
+              <h3>Webhooks</h3>
+              <p>Callback URL, signed event status, issuer, and delivery result.</p>
+            </VCard>
+          </VCol>
+
+          <VCol cols="12" md="3">
+            <VCard class="metric-card pa-5" height="100%">
+              <h3>API Keys</h3>
+              <p>Phone API keys, linked phones, rotation, and revoke workflow.</p>
+            </VCard>
+          </VCol>
+        </VRow>
+      </VContainer>
+    </section>
+
+    <section id="operator-checklist" class="py-16">
+      <VContainer>
+        <VRow>
+          <VCol cols="12" md="6">
+            <div class="section-heading text-left">
+              <VChip color="primary" variant="tonal" class="mb-4">
+                Setup checklist
+              </VChip>
+              <h2>Required proof before any DeliChow OS integration</h2>
+              <p>
+                A polished screen is not enough. Gateway integration should stay
+                blocked until runtime proof is captured and repeatable.
+              </p>
+            </div>
+          </VCol>
+
+          <VCol cols="12" md="6">
+            <VList class="checklist-card" lines="two">
+              <VListItem title="Deploy API and web services" subtitle="Cloud Run services reachable on custom domains." />
+              <VListItem title="Pair Android phone" subtitle="Phone API Key login, heartbeat, and FCM token confirmed." />
+              <VListItem title="Send test SMS" subtitle="Carrier SMS received by the target number." />
+              <VListItem title="Verify webhook" subtitle="Signed callback received with message.phone.delivered." />
+              <VListItem title="Record failure behavior" subtitle="Offline, expired, failed, and webhook error paths documented." />
+            </VList>
+          </VCol>
+        </VRow>
+      </VContainer>
+    </section>
+
+    <section class="py-16 surface-section">
+      <VContainer>
+        <VRow>
+          <VCol cols="12" md="6">
+            <VCard class="notice-card pa-6" height="100%">
+              <h2>Merchant responsibility notice</h2>
+              <p>
+                The Android phone must stay powered, connected, logged in, and
+                allowed to run in the background. The SIM must have sufficient
+                carrier plan/load. Carrier network issues and Android battery
+                restrictions can affect delivery.
+              </p>
+            </VCard>
+          </VCol>
+
+          <VCol cols="12" md="6">
+            <VCard class="notice-card pa-6" height="100%">
+              <h2>Licensing and repo boundary</h2>
+              <p>
+                DeliSMS remains an external gateway service. Do not copy AGPL
+                gateway source into the closed-source DeliChow SaaS repo. Use
+                HTTP APIs, webhooks, and a DeliChow-owned adapter layer.
+              </p>
+            </VCard>
+          </VCol>
+        </VRow>
+      </VContainer>
+    </section>
   </div>
 </template>
 
-<style lang="scss">
-.gradient-header {
-  color: #1ad37f;
-  background-image: -webkit-linear-gradient(0deg, #1ad37f 14%, #329ef4 55%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.font-size-45 {
-  font-size: 4.5rem;
-}
-
-.gradient-underline {
+<style scoped>
+.landing-page {
+  background:
+    radial-gradient(circle at top left, rgba(255, 122, 26, 0.16), transparent 34rem),
+    #0f0f0f;
   color: white;
+}
+
+.hero-section {
+  background: linear-gradient(180deg, #121212 0%, #161616 100%);
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 6vw, 5.4rem);
+  font-weight: 900;
+  letter-spacing: -0.07em;
+  line-height: 0.95;
+  max-width: 880px;
+}
+
+.hero-copy {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 1.22rem;
+  line-height: 1.8;
+  margin-top: 28px;
+  max-width: 780px;
+}
+
+.status-card,
+.info-card,
+.metric-card,
+.notice-card,
+.flow-card,
+.checklist-card {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.proof-row {
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 0;
+}
+
+.proof-row span,
+.info-card p,
+.metric-card p,
+.notice-card p,
+.section-heading p {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.proof-row strong {
+  color: #ffb000;
+  margin-left: 18px;
+  text-align: right;
+}
+
+.section-heading {
+  margin: 0 auto;
+  max-width: 840px;
+  text-align: center;
+}
+
+.section-heading h2 {
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 850;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.section-heading p {
+  font-size: 1.08rem;
+  line-height: 1.8;
+  margin-top: 18px;
+}
+
+.surface-section {
+  background: #141414;
+}
+
+.step-number {
+  color: #ffb000;
+  font-size: 0.9rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  margin-bottom: 18px;
+}
+
+.info-card h3,
+.metric-card h3,
+.notice-card h2 {
+  color: white;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.flow-text {
+  color: #ffb000;
+  font-size: clamp(1rem, 2vw, 1.35rem);
+  font-weight: 750;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.checklist-card :deep(.v-list-item-title) {
+  color: white;
+  font-weight: 700;
+}
+
+.checklist-card :deep(.v-list-item-subtitle) {
+  color: rgba(255, 255, 255, 0.64);
 }
 </style>

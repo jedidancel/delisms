@@ -1,40 +1,9 @@
 <script setup lang="ts">
 import { useDisplay } from 'vuetify'
-import {
-  mdiGithub,
-  mdiCircle,
-  mdiTwitter,
-  mdiHeart,
-  mdiShieldStar,
-  mdiLightbulbOn50,
-  mdiCreation,
-  mdiEyeOffOutline,
-  mdiPost,
-  mdiCreditCardOutline,
-  mdiScaleBalance,
-  mdiEmailOutline,
-  mdiBookOpenVariant,
-} from '@mdi/js'
 
-const router = useRouter()
-const route = useRoute()
 const { lgAndUp, mdAndUp } = useDisplay()
 const authStore = useAuthStore()
-const appStore = useAppStore()
-
-function goToPricing() {
-  if (route.name === 'index') {
-    document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })
-  } else {
-    router.push('/').then(() => {
-      setTimeout(() => {
-        document
-          .getElementById('pricing')
-          ?.scrollIntoView({ behavior: 'smooth' })
-      }, 300)
-    })
-  }
-}
+const currentYear = new Date().getFullYear()
 </script>
 
 <template>
@@ -42,269 +11,187 @@ function goToPricing() {
     <v-app-bar color="#121212" elevation="0">
       <v-container>
         <v-row>
-          <v-col class="w-full d-flex">
-            <NuxtLink to="/" class="text-decoration-none d-flex align-baseline">
-              <v-avatar
-                color="#121212"
-                class="pa-1"
-                rounded="0"
-                :image="'/img/logo.svg'"
-                :size="38"
-              />
-              <h3
-                v-if="lgAndUp"
-                class="text-headline-large mb-0 ml-1 mt-6 text-white"
-              >
-                httpSMS
-              </h3>
+          <v-col class="w-full d-flex align-center">
+            <NuxtLink to="/" class="text-decoration-none d-flex align-center">
+              <img src="/img/delisms-icon-64.png" alt="DeliSMS logo" class="brand-logo" />
+              <div v-if="lgAndUp" class="ml-3">
+                <div class="text-h5 font-weight-bold text-white">
+                  DeliSMS
+                </div>
+                <div class="text-caption text-medium-emphasis mt-n1">
+                  External SMS Gateway
+                </div>
+              </div>
             </NuxtLink>
+
             <v-spacer />
+
             <v-btn
               v-show="lgAndUp"
-              size="large"
               variant="text"
               color="primary"
-              class="my-5 mr-2"
-              @click="goToPricing"
+              class="mr-2"
+              href="#how-it-works"
             >
-              Pricing
+              How it works
             </v-btn>
+
             <v-btn
               v-show="lgAndUp"
-              size="large"
               variant="text"
               color="primary"
-              class="my-5 mr-2"
-              :to="{ name: 'blog' }"
+              class="mr-2"
+              href="#operator-checklist"
             >
-              Blog
+              Checklist
             </v-btn>
+
             <v-btn
-              v-show="lgAndUp && authStore.authUser === null"
-              size="large"
-              variant="text"
-              color="primary"
-              class="my-5 mr-2"
-              :to="{ name: 'login' }"
-            >
-              Login
-            </v-btn>
-            <v-btn
-              v-show="authStore.authUser === null"
+              v-if="authStore.authUser === null"
               color="primary"
               variant="flat"
-              :class="{ 'mt-5': mdAndUp, 'mt-1': !mdAndUp }"
+              :class="{ 'mt-1': !mdAndUp }"
               :size="lgAndUp ? 'large' : 'default'"
-              :to="{ name: 'login' }"
+              to="/login"
             >
-              Get Started
-              <span v-show="lgAndUp">&nbsp;For Free</span>
+              Operator Login
             </v-btn>
+
             <v-btn
-              v-show="authStore.authUser !== null"
+              v-else
               color="primary"
               variant="flat"
-              :class="{ 'mt-5': mdAndUp, 'mt-1': !mdAndUp }"
+              :class="{ 'mt-1': !mdAndUp }"
               :size="lgAndUp ? 'large' : 'default'"
-              :to="{ name: 'threads' }"
+              to="/threads"
             >
-              Dashboard
+              Open Console
             </v-btn>
           </v-col>
         </v-row>
       </v-container>
     </v-app-bar>
+
     <v-main>
       <AppToast />
       <slot />
     </v-main>
-    <v-footer>
+
+    <v-footer color="#121212" class="pt-10 pb-6">
       <v-container>
         <v-row>
-          <v-col cols="12" md="3">
-            <NuxtLink to="/" class="text-decoration-none d-flex mt-n6">
-              <v-avatar
-                color="#212121"
-                class="mt-8 pa-1"
-                rounded="0"
-                :image="'/img/logo.svg'"
-                :size="38"
-              />
-              <h3 class="text-headline-large ml-1 mb-0 text-white">httpSMS</h3>
-            </NuxtLink>
-            <div class="text-title-medium mb-4 text-medium-emphasis">
-              Made With
-              <v-icon color="#cf1112" :icon="mdiHeart" /> in Tallinn
-              <v-img
-                class="d-inline-block"
-                width="20"
-                src="https://upload.wikimedia.org/wikipedia/commons/8/8f/Flag_of_Estonia.svg"
-              />
+          <v-col cols="12" md="5">
+            <div class="d-flex align-center mb-4">
+              <img src="/img/delisms-icon-64.png" alt="DeliSMS logo" class="brand-logo" />
+              <div class="ml-3">
+                <div class="text-h5 font-weight-bold text-white">
+                  DeliSMS
+                </div>
+                <div class="text-body-2 text-medium-emphasis">
+                  External Android SMS transport gateway for DeliChow.
+                </div>
+              </div>
             </div>
-            <p class="mt-n3">
-              <v-btn
-                href="https://twitter.com/httpsmsHQ"
-                color="#1DA1F2"
-                class="ml-n3"
-                variant="text"
-                :icon="mdiTwitter"
-              />
-              <v-btn
-                :href="appStore.appData.githubUrl"
-                color="#ffffff"
-                variant="text"
-                :icon="mdiGithub"
-              />
-              <v-btn
-                href="https://discord.gg/kGk8HVqeEZ"
-                icon
-                variant="text"
-                color="#5865f2"
-              >
-                <v-img
-                  contain
-                  height="24"
-                  width="24"
-                  src="/img/discord-logo-blue.svg"
-                />
-              </v-btn>
+
+            <p class="text-body-2 text-medium-emphasis mb-0">
+              Lab / foundation service. Delivery depends on the Android device,
+              SIM, carrier network, Firebase dispatch, and webhook processing.
             </p>
-            <a
-              href="https://www.saashub.com/httpsms?utm_source=badge&utm_campaign=badge&utm_content=httpsms&badge_variant=color&badge_kind=approved"
-              target="_blank"
-            >
-              <img
-                src="https://cdn-b.saashub.com/img/badges/approved-color.png?v=1"
-                alt="httpSMS badge"
-                style="max-width: 150px"
-              />
-            </a>
           </v-col>
+
           <v-col cols="12" md="3">
-            <h2 class="text-headline-small mb-2">Resources</h2>
-            <ul style="list-style: none" class="pa-0">
-              <li class="mb-2">
-                <a
-                  class="text-white text-decoration-none footer-link"
-                  style="cursor: pointer"
-                  @click.stop="goToPricing"
-                >
-                  Pricing
-                  <v-icon size="small" :icon="mdiCreditCardOutline" />
-                </a>
+            <h2 class="text-subtitle-1 font-weight-bold mb-3 text-white">
+              Gateway
+            </h2>
+            <ul class="footer-list">
+              <li>Custom web: sms.delichow.ph</li>
+              <li>Custom API: api.sms.delichow.ph</li>
+              <li>Android package: com.httpsms</li>
+            </ul>
+          </v-col>
+
+          <v-col cols="12" md="2">
+            <h2 class="text-subtitle-1 font-weight-bold mb-3 text-white">
+              Console
+            </h2>
+            <ul class="footer-list">
+              <li>
+                <NuxtLink class="footer-link" to="/login">
+                  Login
+                </NuxtLink>
               </li>
-              <li class="mb-2">
-                <a
-                  href="https://httpsms.lemonsqueezy.com/affiliates"
-                  class="text-white text-decoration-none footer-link"
-                >
-                  Affiliates
-                  <v-icon color="warning" size="small" :icon="mdiShieldStar" />
-                </a>
+              <li>
+                <NuxtLink class="footer-link" to="/threads">
+                  Messages
+                </NuxtLink>
               </li>
-              <li class="mb-2">
-                <a
-                  href="https://status.httpsms.com"
-                  class="text-white text-decoration-none footer-link"
-                >
-                  Site status
-                  <v-icon color="success" size="x-small" :icon="mdiCircle" />
-                </a>
+              <li>
+                <NuxtLink class="footer-link" to="/phone-api-keys">
+                  Phone API Keys
+                </NuxtLink>
               </li>
-              <li class="mb-2">
-                <NuxtLink
-                  class="text-white text-decoration-none footer-link"
-                  to="/blog"
-                >
-                  Blog <v-icon size="small" :icon="mdiPost" />
+              <li>
+                <NuxtLink class="footer-link" to="/settings">
+                  Settings
                 </NuxtLink>
               </li>
             </ul>
           </v-col>
-          <v-col cols="12" md="3">
-            <h2 class="text-headline-small mb-2">Developers</h2>
-            <ul style="list-style: none" class="pa-0">
-              <li class="mb-2">
-                <a
-                  :href="appStore.appData.documentationUrl"
-                  class="text-white text-decoration-none footer-link"
-                >
-                  Documentation
-                  <v-icon size="small" :icon="mdiBookOpenVariant" />
-                </a>
-              </li>
-              <li class="mb-2">
-                <a
-                  :href="appStore.appData.githubUrl"
-                  class="text-white text-decoration-none footer-link"
-                >
-                  Github <v-icon size="small" :icon="mdiGithub" />
-                </a>
-              </li>
-              <li class="mb-2">
-                <a
-                  href="https://sandbox.httpsms.com"
-                  class="text-white text-decoration-none footer-link"
-                >
-                  Sandbox
-                  <v-icon size="small" color="pink" :icon="mdiCreation" />
-                </a>
-              </li>
-              <li class="mb-2">
-                <a
-                  href="https://httpsms.featurebase.app"
-                  class="text-white text-decoration-none footer-link"
-                >
-                  Request Feature
-                  <v-icon
-                    size="small"
-                    color="yellow"
-                    :icon="mdiLightbulbOn50"
-                  />
-                </a>
-              </li>
-            </ul>
-          </v-col>
-          <v-col cols="12" md="3">
-            <h2 class="text-headline-small mb-2">Legal</h2>
-            <ul style="list-style: none" class="pa-0">
-              <li class="mb-2">
-                <NuxtLink
-                  class="text-white text-decoration-none footer-link"
-                  to="/terms-and-conditions"
-                >
-                  Terms & Conditions
-                  <v-icon size="small" :icon="mdiScaleBalance" />
+
+          <v-col cols="12" md="2">
+            <h2 class="text-subtitle-1 font-weight-bold mb-3 text-white">
+              Legal
+            </h2>
+            <ul class="footer-list">
+              <li>
+                <NuxtLink class="footer-link" to="/terms-and-conditions">
+                  Terms
                 </NuxtLink>
               </li>
-              <li class="mb-2">
-                <NuxtLink
-                  class="text-white text-decoration-none footer-link"
-                  to="/privacy-policy"
-                >
-                  Privacy Policy
-                  <v-icon size="small" :icon="mdiEyeOffOutline" />
+              <li>
+                <NuxtLink class="footer-link" to="/privacy-policy">
+                  Privacy
                 </NuxtLink>
-              </li>
-              <li class="mt-2">
-                <a
-                  class="text-white text-decoration-none footer-link"
-                  href="mailto:support@httpsms.com"
-                >
-                  Contact Support
-                  <v-icon size="small" :icon="mdiEmailOutline" />
-                </a>
               </li>
             </ul>
           </v-col>
         </v-row>
+
+        <v-divider class="my-6" />
+
+        <div class="text-caption text-medium-emphasis">
+          © {{ currentYear }} DeliSMS Gateway Lab. External AGPL gateway service.
+          Not yet Paid Client Release ready.
+        </div>
       </v-container>
     </v-footer>
   </v-app>
 </template>
 
 <style scoped>
+.brand-logo {
+  height: 42px;
+  object-fit: contain;
+  width: 42px;
+}
+
+.footer-list {
+  color: rgba(255, 255, 255, 0.68);
+  list-style: none;
+  padding: 0;
+}
+
+.footer-list li {
+  margin-bottom: 8px;
+}
+
+.footer-link {
+  color: rgba(255, 255, 255, 0.82);
+  text-decoration: none;
+}
+
 .footer-link:hover {
-  text-decoration: underline !important;
+  color: white;
+  text-decoration: underline;
 }
 </style>

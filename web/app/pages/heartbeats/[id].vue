@@ -13,7 +13,7 @@ definePageMeta({
 })
 
 useHead({
-  title: 'Heartbeats - httpSMS',
+  title: 'Heartbeats - DeliSMS',
 })
 
 const route = useRoute()
@@ -172,7 +172,7 @@ onMounted(async () => {
         <VRow>
           <VCol cols="12" class="mt-n8">
             <p>
-              Every 15 minutes, the httpSMS app on your Android phone sends a
+              Every 15 minutes, the DeliSMS app on your Android phone sends a
               heartbeat event to the httpsms API to show that it is alive. The
               reason for this is because the Android operating system sometimes
               kills an application to save battery
@@ -184,7 +184,7 @@ onMounted(async () => {
               >.
             </p>
             <p>
-              If httpSMS doesn't get any heartbeat event in a 1-hour interval,
+              If DeliSMS does not receive any heartbeat event in a 1-hour interval,
               you will get an email notification about it so you can check if
               there is an issue with your Android phone.
             </p>
@@ -199,7 +199,7 @@ onMounted(async () => {
           <VCol cols="12">
             <p>
               The table below shows the last 100 heartbeat events received from
-              the httpSMS app on your Android phone.
+              the DeliSMS app on your Android phone.
             </p>
             <VProgressLinear
               v-if="loading"

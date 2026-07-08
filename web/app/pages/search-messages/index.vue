@@ -37,7 +37,7 @@ definePageMeta({
 })
 
 useHead({
-  title: 'Search your Messages - httpSMS',
+  title: 'Search Messages - DeliSMS',
 })
 
 const route = useRoute()
@@ -482,7 +482,7 @@ onBeforeUnmount(() => {
                   messages?
                 </VCardTitle>
                 <VCardText class="text-medium-emphasis">
-                  The messages will be deleted permanently from the httpSMS
+                  The messages will be deleted permanently from the DeliSMS gateway
                   server and cannot be recovered.
                 </VCardText>
                 <VCardActions class="pb-4">

@@ -10,7 +10,7 @@ definePageMeta({
 })
 
 useHead({
-  title: 'Send Bulk Messages - httpSMS',
+  title: 'Bulk Messages - DeliSMS',
 })
 
 const router = useRouter()
@@ -196,7 +196,7 @@ onMounted(async () => {
                   v-if="mdAndUp"
                   variant="plain"
                   color="info"
-                  href="mailto:arnold@httpsms.com?subject=I'm having trouble with the bulk messages"
+                  href="mailto:support@delichow.ph?subject=DeliSMS bulk message lab support"
                 >
                   I Need Help
                 </VBtn>

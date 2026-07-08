@@ -19,9 +19,9 @@ const { mdAndDown } = useDisplay()
               class="mx-auto d-inline-block"
               src="/img/logo.svg"
               style="max-width: 32px"
-              alt="httpSMS Logo"
+              alt="DeliSMS Logo"
             />
-            Loading the httpSMS dashboard
+            Loading the DeliSMS gateway console
           </h2>
           <v-progress-circular
             indeterminate

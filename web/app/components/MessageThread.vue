@@ -24,7 +24,7 @@ function threadDate(date: string): string {
 function onInstallApp() {
   notificationsStore.addNotification({
     type: 'info',
-    message: 'Downloading the httpSMS Android App',
+    message: 'Downloading the DeliSMS Android App',
   })
 }
 </script>
