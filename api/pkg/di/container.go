@@ -1695,6 +1695,7 @@ func (container *Container) RegisterPhoneRoutes() {
 // RegisterUserRoutes registers routes for the /users prefix
 func (container *Container) RegisterUserRoutes() {
 	container.logger.Debug(fmt.Sprintf("registering %T routes", &handlers.UserHandler{}))
+	container.UserHandler().RegisterPublicRoutes(container.App())
 	container.UserHandler().RegisterRoutes(container.App(), container.AuthenticatedMiddleware())
 }
 

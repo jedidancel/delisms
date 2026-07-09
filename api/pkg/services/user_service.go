@@ -131,6 +131,27 @@ func (service *UserService) GenerateReceipt(ctx context.Context, params *UserInv
 	return response.Body, nil
 }
 
+// CreateFirebaseUser creates a Firebase Auth user for an invited DeliSMS account.
+func (service *UserService) CreateFirebaseUser(ctx context.Context, email string, password string) (*auth.UserRecord, error) {
+	ctx, span, ctxLogger := service.tracer.StartWithLogger(ctx, service.logger)
+	defer span.End()
+
+	params := (&auth.UserToCreate{}).
+		Email(email).
+		Password(password).
+		EmailVerified(false).
+		Disabled(false)
+
+	user, err := service.authClient.CreateUser(ctx, params)
+	if err != nil {
+		msg := fmt.Sprintf("could not create Firebase auth user for email [%s]", email)
+		return nil, service.tracer.WrapErrorSpan(span, stacktrace.Propagate(err, msg))
+	}
+
+	ctxLogger.Info(fmt.Sprintf("created Firebase auth user [%s] for invited email [%s]", user.UID, email))
+	return user, nil
+}
+
 // Get fetches or creates an entities.User
 func (service *UserService) Get(ctx context.Context, source string, authUser entities.AuthContext) (*entities.User, error) {
 	ctx, span := service.tracer.Start(ctx)

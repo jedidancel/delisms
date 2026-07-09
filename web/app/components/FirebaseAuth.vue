@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import {
   getAuth,
-  signInWithPopup,
-  GoogleAuthProvider,
-  GithubAuthProvider,
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   sendPasswordResetEmail,
 } from 'firebase/auth'
-import { mdiGoogle, mdiGithub, mdiEmail } from '@mdi/js'
+import { mdiEmail, mdiLockOutline, mdiTicketConfirmationOutline } from '@mdi/js'
 import type { User as FirebaseUser } from 'firebase/auth'
 import { ErrorMessages } from '~/utils/errors'
 
@@ -20,34 +16,19 @@ const props = withDefaults(
 )
 
 const router = useRouter()
+const config = useRuntimeConfig()
 const authStore = useAuthStore()
 const notificationsStore = useNotificationsStore()
 const appStore = useAppStore()
 
 const loading = ref(false)
-const showEmailForm = ref(false)
-const isSignUp = ref(false)
-const showForgotPassword = ref(false)
+const mode = ref<'login' | 'invite' | 'reset'>('login')
 const resetEmailSent = ref(false)
 const email = ref('')
 const password = ref('')
+const inviteCode = ref('')
 const generalError = ref('')
 const errorMessages = ref(new ErrorMessages())
-
-type LoginMethod = 'google' | 'github' | 'email'
-const LAST_LOGIN_METHOD_KEY = 'httpsms_last_login_method'
-const lastUsedMethod = ref<LoginMethod | null>(null)
-
-onMounted(() => {
-  try {
-    const stored = localStorage.getItem(LAST_LOGIN_METHOD_KEY)
-    if (stored === 'google' || stored === 'github' || stored === 'email') {
-      lastUsedMethod.value = stored
-    }
-  } catch (error) {
-    console.error(error)
-  }
-})
 
 function clearErrors() {
   errorMessages.value = new ErrorMessages()
@@ -56,21 +37,26 @@ function clearErrors() {
 
 function validateEmail(): boolean {
   clearErrors()
+
   if (!email.value.trim()) {
     errorMessages.value.add('email', 'Please provide an email address')
     return false
   }
+
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(email.value.trim())) {
     errorMessages.value.add('email', 'Please enter a valid email address')
     return false
   }
+
   return true
 }
 
 function validateLoginForm(): boolean {
   clearErrors()
+
   let valid = true
+
   if (!email.value.trim()) {
     errorMessages.value.add('email', 'Please provide an email address')
     valid = false
@@ -81,59 +67,75 @@ function validateLoginForm(): boolean {
       valid = false
     }
   }
+
   if (!password.value) {
     errorMessages.value.add('password', 'Please enter your password')
     valid = false
   }
+
   return valid
 }
 
-async function signInWithGoogle() {
-  loading.value = true
-  try {
-    const auth = getAuth()
-    const result = await signInWithPopup(auth, new GoogleAuthProvider())
-    onSuccess(result.user, 'google')
-  } catch (error: unknown) {
-    handleError(error, true)
-  } finally {
-    loading.value = false
+function validateInviteForm(): boolean {
+  const validLogin = validateLoginForm()
+  let valid = validLogin
+
+  if (!inviteCode.value.trim()) {
+    errorMessages.value.add('invite_code', 'Please enter your invite code')
+    valid = false
   }
+
+  return valid
 }
 
-async function signInWithGithub() {
-  loading.value = true
-  try {
-    const auth = getAuth()
-    const result = await signInWithPopup(auth, new GithubAuthProvider())
-    onSuccess(result.user, 'github')
-  } catch (error: unknown) {
-    handleError(error, true)
-  } finally {
-    loading.value = false
-  }
-}
-
-async function submitEmail() {
+async function submitLogin() {
   if (!validateLoginForm()) return
+
   loading.value = true
   try {
     const auth = getAuth()
-    let result
-    if (isSignUp.value) {
-      result = await createUserWithEmailAndPassword(
-        auth,
-        email.value.trim(),
-        password.value,
-      )
-    } else {
-      result = await signInWithEmailAndPassword(
-        auth,
-        email.value.trim(),
-        password.value,
-      )
-    }
-    onSuccess(result.user, 'email')
+    const result = await signInWithEmailAndPassword(
+      auth,
+      email.value.trim(),
+      password.value,
+    )
+
+    onSuccess(result.user)
+  } catch (error: unknown) {
+    handleError(error)
+  } finally {
+    loading.value = false
+  }
+}
+
+async function submitInviteSignup() {
+  if (!validateInviteForm()) return
+
+  loading.value = true
+  try {
+    await $fetch('/v1/auth/invite-signup', {
+      baseURL: config.public.apiBaseUrl,
+      method: 'POST',
+      body: {
+        email: email.value.trim(),
+        password: password.value,
+        invite_code: inviteCode.value.trim(),
+      },
+    })
+
+    const auth = getAuth()
+    const result = await signInWithEmailAndPassword(
+      auth,
+      email.value.trim(),
+      password.value,
+    )
+
+    notificationsStore.addNotification({
+      message: 'Invited account created successfully.',
+      type: 'success',
+    })
+
+    onSuccess(result.user)
   } catch (error: unknown) {
     handleError(error)
   } finally {
@@ -143,6 +145,7 @@ async function submitEmail() {
 
 async function submitPasswordReset() {
   if (!validateEmail()) return
+
   loading.value = true
   try {
     const auth = getAuth()
@@ -155,50 +158,44 @@ async function submitPasswordReset() {
   }
 }
 
-function showForgotPasswordForm() {
+function switchMode(nextMode: 'login' | 'invite' | 'reset') {
   clearErrors()
   resetEmailSent.value = false
-  showForgotPassword.value = true
+  mode.value = nextMode
 }
 
-function backToSignIn() {
-  clearErrors()
-  resetEmailSent.value = false
-  showForgotPassword.value = false
-}
-
-function onSuccess(user: FirebaseUser, method: LoginMethod) {
-  try {
-    localStorage.setItem(LAST_LOGIN_METHOD_KEY, method)
-  } catch (error) {
-    console.error(error)
-  }
+function onSuccess(user: FirebaseUser) {
   notificationsStore.addNotification({
-    message: 'Login successful!',
+    message: 'Login successful.',
     type: 'success',
   })
+
   authStore.onAuthStateChanged(user)
   router.push({ path: props.to })
 }
 
-function handleError(error: unknown, isSocial = false) {
-  const firebaseError = error as { code?: string; message?: string }
-  const code = firebaseError.code || ''
-
-  if (
-    code === 'auth/popup-closed-by-user' ||
-    code === 'auth/cancelled-popup-request'
-  ) {
-    return
-  }
-
-  if (isSocial) {
-    const message = getGeneralErrorMessage(code, firebaseError.message)
-    notificationsStore.addNotification({ message, type: 'error' })
-    return
-  }
-
+function handleError(error: unknown) {
   clearErrors()
+
+  const err = error as {
+    code?: string
+    message?: string
+    data?: {
+      message?: string
+      data?: Record<string, string[]>
+    }
+  }
+
+  if (err.data?.data) {
+    for (const [field, messages] of Object.entries(err.data.data)) {
+      for (const message of messages) {
+        errorMessages.value.add(field, message)
+      }
+    }
+    return
+  }
+
+  const code = err.code || ''
 
   switch (code) {
     case 'auth/wrong-password':
@@ -239,173 +236,30 @@ function handleError(error: unknown, isSocial = false) {
       generalError.value =
         'Unable to connect to the server. Please check your internet connection'
       break
-    case 'auth/missing-email':
-      errorMessages.value.add('email', 'Please provide an email address')
-      break
     default:
-      generalError.value =
-        firebaseError.message || 'An unexpected error occurred'
-  }
-}
-
-function getGeneralErrorMessage(
-  code: string,
-  fallback: string | undefined,
-): string {
-  switch (code) {
-    case 'auth/user-not-found':
-      return 'No account found with this email address'
-    case 'auth/wrong-password':
-    case 'auth/invalid-credential':
-      return 'The provided credentials are invalid.'
-    case 'auth/user-disabled':
-      return 'This account has been disabled'
-    case 'auth/too-many-requests':
-      return 'Too many failed attempts. Please try again later'
-    case 'auth/network-request-failed':
-      return 'Unable to connect to the server. Please check your internet connection'
-    default:
-      return fallback || 'An unexpected error occurred'
+      if (err.data?.message === 'Forbidden') {
+        errorMessages.value.add('invite_code', 'Invalid invite code')
+      } else {
+        generalError.value =
+          err.data?.message || err.message || 'An unexpected error occurred'
+      }
   }
 }
 </script>
 
 <template>
   <div>
-    <v-btn
-      block
-      color="white"
-      size="large"
-      class="mb-3 position-relative"
-      :loading="loading"
-      :disabled="loading"
-      @click="signInWithGoogle"
-    >
-      <v-chip
-        v-if="lastUsedMethod === 'google'"
-        size="x-small"
-        color="primary"
-        label
-        variant="flat"
-        class="position-absolute last-used-chip"
-      >
-        Last Used
-      </v-chip>
-      <v-icon color="red" :icon="mdiGoogle" class="mr-2" />
-      Continue with Google
-    </v-btn>
+    <VAlert type="info" variant="tonal" class="mb-4">
+      Use email/password for existing DeliSMS users. New accounts require an
+      invite code from the gateway owner.
+    </VAlert>
 
-    <v-btn
-      block
-      size="large"
-      variant="flat"
-      color="black"
-      class="mb-3 position-relative"
-      :loading="loading"
-      :disabled="loading"
-      @click="signInWithGithub"
-    >
-      <v-chip
-        v-if="lastUsedMethod === 'github'"
-        label
-        size="x-small"
-        color="primary"
-        variant="flat"
-        class="position-absolute last-used-chip"
-      >
-        Last Used
-      </v-chip>
-      <v-icon :icon="mdiGithub" class="mr-2" />
-      Continue with GitHub
-    </v-btn>
-
-    <v-btn
-      v-if="!showEmailForm"
-      block
-      size="large"
-      variant="flat"
-      color="red"
-      class="mb-3 position-relative"
-      :disabled="loading"
-      @click="showEmailForm = true"
-    >
-      <v-chip
-        v-if="lastUsedMethod === 'email'"
-        label
-        size="x-small"
-        color="primary"
-        variant="flat"
-        class="position-absolute last-used-chip"
-      >
-        Last Used
-      </v-chip>
-      <v-icon :icon="mdiEmail" class="mr-2" />
-      Continue with email
-    </v-btn>
-
-    <!-- Forgot Password Form -->
-    <v-form
-      v-if="showEmailForm && showForgotPassword"
+    <VForm
+      v-if="mode === 'login'"
       class="mt-4"
-      @submit.prevent="submitPasswordReset"
+      @submit.prevent="submitLogin"
     >
-      <template v-if="!resetEmailSent">
-        <p class="text-body-medium text-medium-emphasis mb-4">
-          Enter your email address to reset your password
-        </p>
-        <v-text-field
-          v-model="email"
-          label="Email Address"
-          color="primary"
-          type="email"
-          variant="outlined"
-          density="comfortable"
-          class="mb-2"
-          :error="errorMessages.has('email')"
-          :error-messages="errorMessages.get('email')"
-        />
-        <v-alert
-          v-if="generalError"
-          type="error"
-          density="compact"
-          class="mb-3"
-        >
-          {{ generalError }}
-        </v-alert>
-        <v-btn
-          block
-          size="large"
-          color="primary"
-          type="submit"
-          :loading="loading"
-        >
-          Send Reset Link
-        </v-btn>
-      </template>
-      <template v-else>
-        <v-alert type="success" density="compact" class="mb-3">
-          Check your email for password reset instructions
-        </v-alert>
-      </template>
-      <v-btn
-        block
-        variant="text"
-        size="small"
-        color="warning"
-        class="mt-2"
-        @click="backToSignIn"
-      >
-        Back to Sign In
-      </v-btn>
-    </v-form>
-
-    <!-- Sign In / Sign Up Form -->
-    <v-form
-      v-if="showEmailForm && !showForgotPassword"
-      class="mt-4"
-      @submit.prevent="submitEmail"
-    >
-      <v-text-field
+      <VTextField
         v-model="email"
         label="Email Address"
         color="primary"
@@ -413,10 +267,12 @@ function getGeneralErrorMessage(
         variant="outlined"
         density="comfortable"
         class="mb-2"
+        :prepend-inner-icon="mdiEmail"
         :error="errorMessages.has('email')"
         :error-messages="errorMessages.get('email')"
       />
-      <v-text-field
+
+      <VTextField
         v-model="password"
         label="Password"
         type="password"
@@ -424,68 +280,194 @@ function getGeneralErrorMessage(
         variant="outlined"
         density="comfortable"
         class="mb-2"
+        :prepend-inner-icon="mdiLockOutline"
         :error="errorMessages.has('password')"
         :error-messages="errorMessages.get('password')"
       />
-      <v-alert v-if="generalError" type="error" density="compact" class="mb-3">
+
+      <VAlert v-if="generalError" type="error" density="compact" class="mb-3">
         {{ generalError }}
-      </v-alert>
-      <v-btn
-        v-if="!isSignUp"
-        variant="plain"
-        size="small"
-        color="primary"
-        class="mb-3 px-0 mt-n4"
-        @click="showForgotPasswordForm"
-      >
-        Forgot Password?
-      </v-btn>
-      <v-btn
+      </VAlert>
+
+      <VBtn
         block
         size="large"
         color="primary"
         type="submit"
         :loading="loading"
       >
-        {{ isSignUp ? 'Sign Up' : 'Sign In' }}
-      </v-btn>
-      <v-btn
-        block
-        variant="plain"
-        size="small"
+        Sign In
+      </VBtn>
+
+      <div class="d-flex justify-space-between mt-3">
+        <VBtn
+          variant="plain"
+          size="small"
+          color="primary"
+          class="px-0"
+          @click="switchMode('reset')"
+        >
+          Forgot Password?
+        </VBtn>
+
+        <VBtn
+          variant="plain"
+          size="small"
+          color="primary"
+          class="px-0"
+          @click="switchMode('invite')"
+        >
+          Create account with invite code
+        </VBtn>
+      </div>
+    </VForm>
+
+    <VForm
+      v-if="mode === 'invite'"
+      class="mt-4"
+      @submit.prevent="submitInviteSignup"
+    >
+      <VTextField
+        v-model="email"
+        label="Email Address"
         color="primary"
-        class="mt-2"
-        @click="isSignUp = !isSignUp"
+        type="email"
+        variant="outlined"
+        density="comfortable"
+        class="mb-2"
+        :prepend-inner-icon="mdiEmail"
+        :error="errorMessages.has('email')"
+        :error-messages="errorMessages.get('email')"
+      />
+
+      <VTextField
+        v-model="password"
+        label="Password"
+        type="password"
+        color="primary"
+        variant="outlined"
+        density="comfortable"
+        class="mb-2"
+        :prepend-inner-icon="mdiLockOutline"
+        :error="errorMessages.has('password')"
+        :error-messages="errorMessages.get('password')"
+      />
+
+      <VTextField
+        v-model="inviteCode"
+        label="Invite Code"
+        type="password"
+        color="primary"
+        variant="outlined"
+        density="comfortable"
+        class="mb-2"
+        :prepend-inner-icon="mdiTicketConfirmationOutline"
+        :error="errorMessages.has('invite_code')"
+        :error-messages="errorMessages.get('invite_code')"
+      />
+
+      <VAlert v-if="generalError" type="error" density="compact" class="mb-3">
+        {{ generalError }}
+      </VAlert>
+
+      <VBtn
+        block
+        size="large"
+        color="primary"
+        type="submit"
+        :loading="loading"
       >
-        {{
-          isSignUp ? 'Already have an account? Sign In' : 'No account? Sign Up'
-        }}
-      </v-btn>
-    </v-form>
+        Create Invited Account
+      </VBtn>
+
+      <VBtn
+        block
+        variant="text"
+        size="small"
+        color="warning"
+        class="mt-2"
+        @click="switchMode('login')"
+      >
+        Back to Sign In
+      </VBtn>
+    </VForm>
+
+    <VForm
+      v-if="mode === 'reset'"
+      class="mt-4"
+      @submit.prevent="submitPasswordReset"
+    >
+      <template v-if="!resetEmailSent">
+        <p class="text-body-medium text-medium-emphasis mb-4">
+          Enter your email address to reset your password.
+        </p>
+
+        <VTextField
+          v-model="email"
+          label="Email Address"
+          color="primary"
+          type="email"
+          variant="outlined"
+          density="comfortable"
+          class="mb-2"
+          :prepend-inner-icon="mdiEmail"
+          :error="errorMessages.has('email')"
+          :error-messages="errorMessages.get('email')"
+        />
+
+        <VAlert
+          v-if="generalError"
+          type="error"
+          density="compact"
+          class="mb-3"
+        >
+          {{ generalError }}
+        </VAlert>
+
+        <VBtn
+          block
+          size="large"
+          color="primary"
+          type="submit"
+          :loading="loading"
+        >
+          Send Reset Link
+        </VBtn>
+      </template>
+
+      <template v-else>
+        <VAlert type="success" density="compact" class="mb-3">
+          Check your email for password reset instructions.
+        </VAlert>
+      </template>
+
+      <VBtn
+        block
+        variant="text"
+        size="small"
+        color="warning"
+        class="mt-2"
+        @click="switchMode('login')"
+      >
+        Back to Sign In
+      </VBtn>
+    </VForm>
 
     <p class="text-body-small text-medium-emphasis mt-4">
-      By continuing, you are indicating that you accept our
+      By continuing, you are accepting the DeliSMS lab
       <a
         :href="appStore.appData.url + '/terms-and-conditions'"
         class="text-decoration-none"
       >
-        Terms of Service
+        Terms
       </a>
       and
       <a
         :href="appStore.appData.url + '/privacy-policy'"
         class="text-decoration-none"
       >
-        Privacy Policy.</a
+        Privacy Notice.</a
       >
     </p>
   </div>
 </template>
-
-<style scoped>
-.last-used-chip {
-  top: -8px;
-  left: -8px;
-  z-index: 1;
-}
-</style>

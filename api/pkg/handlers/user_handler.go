@@ -1,7 +1,11 @@
 package handlers
 
 import (
+	"crypto/subtle"
 	"fmt"
+	"net/url"
+	"os"
+	"strings"
 
 	"github.com/NdoleStudio/httpsms/pkg/requests"
 	"github.com/NdoleStudio/httpsms/pkg/validators"
@@ -37,6 +41,11 @@ func NewUserHandler(
 	}
 }
 
+// RegisterPublicRoutes registers public user/auth routes.
+func (h *UserHandler) RegisterPublicRoutes(router fiber.Router) {
+	h.register(router, fiber.MethodPost, "/v1/auth/invite-signup", []fiber.Handler{}, h.InviteSignup)
+}
+
 // RegisterRoutes registers the routes for the MessageHandler
 func (h *UserHandler) RegisterRoutes(router fiber.Router, middlewares ...fiber.Handler) {
 	h.register(router, fiber.MethodGet, "/v1/users/me", middlewares, h.Show)
@@ -48,6 +57,69 @@ func (h *UserHandler) RegisterRoutes(router fiber.Router, middlewares ...fiber.H
 	h.register(router, fiber.MethodDelete, "/v1/users/subscription", middlewares, h.cancelSubscription)
 	h.register(router, fiber.MethodGet, "/v1/users/subscription/payments", middlewares, h.subscriptionPayments)
 	h.register(router, fiber.MethodPost, "/v1/users/subscription/invoices/:subscriptionInvoiceID", middlewares, h.subscriptionInvoice)
+}
+
+// InviteSignup creates a Firebase Auth user only when the DeliSMS invite code is valid.
+func (h *UserHandler) InviteSignup(c fiber.Ctx) error {
+	ctx, span, ctxLogger := h.tracer.StartFromFiberCtxWithLogger(c, h.logger)
+	defer span.End()
+
+	var request struct {
+		Email      string `json:"email"`
+		Password   string `json:"password"`
+		InviteCode string `json:"invite_code"`
+	}
+
+	if err := c.Bind().Body(&request); err != nil {
+		msg := fmt.Sprintf("cannot marshall params [%s] into invite signup request", c.OriginalURL())
+		ctxLogger.Warn(stacktrace.Propagate(err, msg))
+		return h.responseBadRequest(c, err)
+	}
+
+	request.Email = strings.TrimSpace(request.Email)
+	request.InviteCode = strings.TrimSpace(request.InviteCode)
+
+	validationErrors := url.Values{}
+
+	if request.Email == "" {
+		validationErrors.Add("email", "Email address is required")
+	}
+
+	if request.Password == "" {
+		validationErrors.Add("password", "Password is required")
+	} else if len(request.Password) < 6 {
+		validationErrors.Add("password", "Password must be at least 6 characters")
+	}
+
+	if request.InviteCode == "" {
+		validationErrors.Add("invite_code", "Invite code is required")
+	}
+
+	if len(validationErrors) != 0 {
+		return h.responseUnprocessableEntity(c, validationErrors, "validation errors while creating invited account")
+	}
+
+	expectedInviteCode := strings.TrimSpace(os.Getenv("DELISMS_INVITE_CODE"))
+	if expectedInviteCode == "" {
+		ctxLogger.Error(stacktrace.NewError("DELISMS_INVITE_CODE is not configured"))
+		return h.responseInternalServerError(c)
+	}
+
+	if subtle.ConstantTimeCompare([]byte(request.InviteCode), []byte(expectedInviteCode)) != 1 {
+		return h.responseForbidden(c)
+	}
+
+	user, err := h.service.CreateFirebaseUser(ctx, request.Email, request.Password)
+	if err != nil {
+		msg := fmt.Sprintf("cannot create invited Firebase user for email [%s]", request.Email)
+		ctxLogger.Error(stacktrace.Propagate(err, msg))
+		return h.responseInternalServerError(c)
+	}
+
+	return h.responseCreated(c, "invited user created successfully", fiber.Map{
+		"uid":   user.UID,
+		"email": user.Email,
+	})
 }
 
 // Show returns an entities.User
